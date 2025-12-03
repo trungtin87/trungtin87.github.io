@@ -2,7 +2,7 @@
 
 ​Chào bạn! Tôi là một kẻ mơ mộng, luôn mang trong mình sự tò mò mãnh liệt về thế giới này. Tôi yêu tự do, đắm mình trong thiên nhiên, và tìm thấy niềm đam mê trong công nghệ.
 
-## ​💖 Mong muốn của tôi là ***người Việt có thể học hỏi mọi thứ bằng tiếng Việt***
+## ​💖 Mong muốn của tôi là **người Việt có thể học hỏi mọi thứ bằng tiếng Việt**
 ​Blog này ra đời không chỉ để thỏa mãn đam mê cá nhân, mà còn để phục vụ một mục mong muốn đóng góp chút sức nhỏ bé qua việc biên dịch, chuyển ngữ các tài liệu quan trọng, giúp ** người Việt có thể học hỏi mọi thứ bằng tiếng Việt ** một cách dễ dàng và hiệu quả nhất. Bởi vì tôi dốt tiếng anh nên tôi luôn tự hỏi "tại sao chúng ta phải học tiếng anh để có thể học mọi thứ ?" 
 
 ## ​📚 Nội Dung Bạn Sẽ Tìm Thấy
