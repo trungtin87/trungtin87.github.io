@@ -1,12 +1,9 @@
 # Tinh Thần Tự Do, Khát Vọng Việt
-# ​✨ Chào Mừng Đến Với Góc Nhỏ Của Kẻ Mơ Mộng
-​Chào bạn! Tôi là một kẻ mơ mộng không ngừng nghỉ, luôn mang trong mình sự tò mò mãnh liệt về thế giới này. Tôi yêu tự do, đắm mình trong thiên nhiên, và tìm thấy niềm đam mê vô tận trong công nghệ.
-​Đây là nơi tôi thể hiện tinh thần phóng khoáng, chia sẻ những suy nghĩ gọn gàng, súc tích, nhưng luôn tràn đầy cảm xúc.
+# ​✨ Chào Mừng Đến Với Hành Trình của Kẻ Khờ
+​Chào bạn! Tôi là một kẻ mơ mộng, luôn mang trong mình sự tò mò mãnh liệt về thế giới này. Tôi yêu tự do, đắm mình trong thiên nhiên, và tìm thấy niềm đam mê trong công nghệ.
 
-# ​💖 Khát Vọng Lớn Nhất
-​Blog này ra đời không chỉ để thỏa mãn đam mê cá nhân, mà còn để phục vụ một mục mong muốn đóng góp chút sức nhỏ bé qua việc biên dịch, chuyển ngữ các tài liệu quan trọng, giúp ** người Việt có thể học hỏi mọi thứ bằng tiếng Việt ** một cách dễ dàng và hiệu quả nhất.
-
-​Mục tiêu cuối cùng: Để Việt Nam vươn mình phát triển, bắt kịp tri thức toàn cầu, khởi đầu từ chính ngôn ngữ mẹ đẻ của chúng ta.
+# ​💖 Mong muốn của tôi là ** người Việt có thể học hỏi mọi thứ bằng tiếng Việt **
+​Blog này ra đời không chỉ để thỏa mãn đam mê cá nhân, mà còn để phục vụ một mục mong muốn đóng góp chút sức nhỏ bé qua việc biên dịch, chuyển ngữ các tài liệu quan trọng, giúp ** người Việt có thể học hỏi mọi thứ bằng tiếng Việt ** một cách dễ dàng và hiệu quả nhất. Bởi vì thế giới không hỗ trợ Tiếng Việt.
 
 # ​📚 Nội Dung Bạn Sẽ Tìm Thấy
 ​Nội dung sẽ tập trung vào những chủ đề tôi tin rằng sẽ thúc đẩy sự học hỏi và phát triển, được trình bày theo phong cách đặc trưng:
