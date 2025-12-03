@@ -1,21 +1,16 @@
-domain: example.com
-url: https://example.com
+url: https://trungtin87.github.io
 baseurl: ""
 
-title: Wind
-email: wind@example.com
-author: Wind Sample
+title: The Joyney of The Fools
+email: 
+author: trungtin87
 
-lang: en
+lang: vi
 
 plugins:
   - jekyll-seo-tag
 
 color: "#13ccf9"
 # disqus:
-#   shortname: example-com
+#   shortname:
 #
-rrss:
-  email: "example@example.cl"
-  telegram: "https://t.me/"
-  discord: "https://discord.com/"
