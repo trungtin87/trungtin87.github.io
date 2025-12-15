@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Web "Không Linh Hồn" - Demo</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; line-height: 1.6; background: #f4f4f9; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        textarea { width: 100%; height: 150px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 10px; }
+        button { flex: 1; padding: 10px; cursor: pointer; border: none; border-radius: 5px; color: white; transition: 0.3s; }
+        .btn-save { background: #2ecc71; }
+        .btn-load { background: #3498db; }
+        input[type="file"] { display: none; }
+        .status { margin-top: 10px; font-size: 0.9em; color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Quán Ghi Chép 📝</h2>
+    <p><small>Mọi thứ xử lý tại máy bạn. Quán không giữ lại gì!</small></p>
+    
+    <textarea id="noteInput" placeholder="Nhập tâm sự ở đây..."></textarea>
+
+    <div class="btn-group">
+        <button class="btn-save" onclick="exportData()">Cất vào túi (Tải về)</button>
+        
+        <button class="btn-load" onclick="document.getElementById('fileInput').click()">Lấy đồ trong túi ra (Mở file)</button>
+        <input type="file" id="fileInput" onchange="importData(event)">
+    </div>
+
+    <p id="status" class="status"></p>
+</div>
+
+<script>
+    // 1. "Bộ não" xử lý việc lưu trữ (Cái gì của khách khách mang đi)
+    function exportData() {
+        const text = document.getElementById('noteInput').value;
+        if (!text) return alert("Có gì đâu mà mang về!");
+
+        const blob = new Blob([text], { type: 'text/plain' });
+        const anchor = document.createElement('a');
+        
+        anchor.download = "du_lieu_cua_toi.txt";
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.click();
+        
+        document.getElementById('status').innerText = "Đã gói xong dữ liệu cho bạn mang về!";
+    }
+
+    // 2. "Bộ não" xử lý việc đọc dữ liệu từ máy khách
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            document.getElementById('noteInput').value = content;
+            document.getElementById('status').innerText = "Đã đọc dữ liệu bạn mang đến!";
+        };
+        reader.readAsText(file);
+    }
+</script>
+
+</body>
+</html>
