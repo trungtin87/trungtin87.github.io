@@ -2,82 +2,216 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quán Tự Phục Vụ 4.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quán Tự Phục Vụ - ToDo Local</title>
     <style>
-        /* Giao diện tổng thể */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* --- GIAO DIỆN (CSS) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #f0f2f5; 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: #f4f7f9; 
             display: flex; 
             justify-content: center; 
+            min-height: 100vh; 
             padding: 20px;
-            min-height: 100vh;
         }
 
-        /* Card chứa ứng dụng - Tự co giãn theo màn hình */
         .container { 
-            background: white; 
+            background: #ffffff; 
             width: 100%; 
-            max-width: 500px; /* Rộng tối đa cho máy tính */
+            max-width: 450px; 
             padding: 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 24px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
             height: fit-content;
         }
 
-        h2 { color: #1a1a1a; text-align: center; margin-bottom: 25px; font-weight: 700; }
+        h2 { color: #1f2937; text-align: center; margin-bottom: 25px; font-size: 24px; }
 
-        /* Nhập liệu: Tự động xuống dòng trên điện thoại nếu cần */
-        .input-group { 
+        .input-area { 
             display: flex; 
             gap: 10px; 
-            margin-bottom: 20px; 
+            margin-bottom: 25px; 
         }
 
         input { 
             flex: 1; 
-            padding: 14px; 
-            border: 2px solid #eee; 
-            border-radius: 12px; 
+            padding: 14px 18px; 
+            border: 2px solid #e5e7eb; 
+            border-radius: 14px; 
             outline: none; 
-            font-size: 16px; /* Chặn tình trạng iPhone tự zoom khi focus */
-            transition: 0.3s;
+            font-size: 16px; /* Chống auto-zoom trên iPhone */
+            transition: all 0.2s;
         }
 
-        input:focus { border-color: #007bff; background: #f8fbff; }
+        input:focus { border-color: #3b82f6; background: #fdfdfd; }
 
-        button { 
-            padding: 12px 20px; 
+        .btn-add { 
+            background: #3b82f6; 
+            color: white; 
+            padding: 14px 22px; 
             border: none; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: 600;
-            transition: 0.2s;
-            -webkit-tap-highlight-color: transparent; /* Xóa viền xanh khi chạm trên điện thoại */
+            border-radius: 14px; 
+            font-weight: 600; 
+            cursor: pointer;
+            white-space: nowrap;
         }
 
-        .btn-add { background: #007bff; color: white; }
         .btn-add:active { transform: scale(0.95); }
 
-        /* Danh sách việc cần làm */
+        /* Danh sách hiển thị */
         ul { list-style: none; }
+
         li { 
-            background: #ffffff; 
+            background: #f9fafb; 
             margin-bottom: 12px; 
-            padding: 15px; 
-            border-radius: 15px; 
+            padding: 16px; 
+            border-radius: 16px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            border: 1px solid #f0f0f0;
-            animation: fadeIn 0.3s ease;
+            border: 1px solid #f1f5f9;
+            animation: slideIn 0.3s ease-out;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .task-text { flex: 1; margin-right: 15px; color: #444; word-break: break-word; }
+        .text { color: #374151; font-size: 16px; flex: 1; padding-right: 10px; word-break: break-all; }
+
+        .btn-del { 
+            background: #fee2e2; 
+            color: #ef4444; 
+            border: none; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-del:active { background: #ef4444; color: white; }
+
+        .empty-state { text-align: center; color: #9ca3af; margin-top: 20px; font-style: italic; }
+
+        .footer { 
+            margin-top: 30px; 
+            padding-top: 15px;
+            border-top: 1px dashed #e5e7eb;
+            font-size: 11px; 
+            color: #9ca3af; 
+            text-align: center; 
+            line-height: 1.6;
+        }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 400px) {
+            .input-area { flex-direction: column; }
+            .btn-add { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Việc Cần Làm</h2>
+    
+    <div class="input-area">
+        <input type="text" id="taskInput" placeholder="Hôm nay bạn cần làm gì?" autocomplete="off">
+        <button class="btn-add" onclick="handleAddTask()">Thêm mới</button>
+    </div>
+
+    <ul id="listContainer">
+        </ul>
+
+    <div class="footer">
+        <b>Triết lý Quán Tự Phục Vụ:</b><br>
+        Dữ liệu nằm tại LocalStorage trên thiết bị của bạn.<br>
+        Máy chủ (Github) không biết và không lưu bất cứ thứ gì.
+    </div>
+</div>
+
+<script>
+    /* --- BỘ NÃO XỬ LÝ (JS) --- */
+
+    // 1. Khi vừa mở ứng dụng: Quét ngay dữ liệu cũ trên máy
+    document.addEventListener('DOMContentLoaded', () => {
+        renderAllTasks();
+    });
+
+    // 2. Hàm thêm công việc mới
+    function handleAddTask() {
+        const input = document.getElementById('taskInput');
+        const content = input.value.trim();
+
+        if (content === "") {
+            alert("Vui lòng nhập nội dung!");
+            return;
+        }
+
+        const newTask = {
+            id: Date.now(),
+            content: content
+        };
+
+        // Lấy dữ liệu cũ -> Thêm mới -> Lưu lại vào máy khách (LocalStorage)
+        const tasks = getAllTasksFromLocal();
+        tasks.push(newTask);
+        saveTasksToLocal(tasks);
+
+        // Cập nhật giao diện
+        input.value = "";
+        renderAllTasks();
+        input.focus();
+    }
+
+    // 3. Hàm xóa công việc
+    function handleDeleteTask(id) {
+        let tasks = getAllTasksFromLocal();
+        tasks = tasks.filter(task => task.id !== id);
+        saveTasksToLocal(tasks);
+        renderAllTasks();
+    }
+
+    // 4. Các hàm hỗ trợ đọc/ghi vào LocalStorage (Ngăn kéo của khách)
+    function getAllTasksFromLocal() {
+        const data = localStorage.getItem('my_todo_data');
+        return data ? JSON.parse(data) : [];
+    }
+
+    function saveTasksToLocal(tasks) {
+        localStorage.setItem('my_todo_data', JSON.stringify(tasks));
+    }
+
+    // 5. Hàm hiển thị danh sách lên màn hình
+    function renderAllTasks() {
+        const listContainer = document.getElementById('listContainer');
+        const tasks = getAllTasksFromLocal();
+
+        if (tasks.length === 0) {
+            listContainer.innerHTML = '<div class="empty-state">Chưa có việc nào, hãy thêm việc mới!</div>';
+            return;
+        }
+
+        listContainer.innerHTML = ""; // Xóa trắng để vẽ lại
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span class="text">${task.content}</span>
+                <button class="btn-del" onclick="handleDeleteTask(${task.id})">Xoá</button>
+            `;
+            listContainer.appendChild(li);
+        });
+    }
+
+    // Lắng nghe phím Enter để thêm việc cho nhanh
+    document.getElementById('taskInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddTask();
+    });
+</script>
+
+</body>
+</html>
