@@ -2,84 +2,82 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Web "Quán Tự Phục Vụ" - To-Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quán Tự Phục Vụ 4.0</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #eceff1; display: flex; justify-content: center; padding: 50px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { color: #2c3e50; text-align: center; margin-bottom: 20px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 8px; outline: none; }
-        input:focus { border-color: #3498db; }
-        button { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .btn-add { background: #3498db; color: white; font-weight: bold; }
-        .btn-add:hover { background: #2980b9; }
-        ul { list-style: none; padding: 0; }
-        li { background: #f8f9fa; margin-bottom: 8px; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3498db; }
-        .btn-del { background: #ff7675; color: white; padding: 5px 10px; font-size: 0.8em; }
-        .btn-del:hover { background: #d63031; }
-        .info { font-size: 0.8em; color: #95a5a6; text-align: center; margin-top: 15px; }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <h2>📋 Việc Cần Làm</h2>
-    <div class="input-group">
-        <input type="text" id="todoInput" placeholder="Hôm nay làm gì nhỉ?">
-        <button class="btn-add" onclick="addTask()">Thêm</button>
-    </div>
-    <ul id="todoList"></ul>
-    <div class="info">Dữ liệu nằm trên máy bạn, quán không giữ gì hết!</div>
-</div>
-
-<script>
-    // 1. "BỘ NÃO" QUÉT DỮ LIỆU KHI VỪA VÀO WEB
-    document.addEventListener('DOMContentLoaded', () => {
-        const rawData = localStorage.getItem('my_private_tasks');
-        if (rawData) {
-            const tasks = JSON.parse(rawData);
-            tasks.forEach(task => renderTask(task));
+        /* Giao diện tổng thể */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px;
+            min-height: 100vh;
         }
-    });
 
-    // 2. THÊM VIỆC (Xử lý tại máy khách và lưu vào "ngăn kéo" LocalStorage)
-    function addTask() {
-        const input = document.getElementById('todoInput');
-        if (!input.value.trim()) return;
+        /* Card chứa ứng dụng - Tự co giãn theo màn hình */
+        .container { 
+            background: white; 
+            width: 100%; 
+            max-width: 500px; /* Rộng tối đa cho máy tính */
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            height: fit-content;
+        }
 
-        const newTask = {
-            id: Date.now(),
-            content: input.value
-        };
+        h2 { color: #1a1a1a; text-align: center; margin-bottom: 25px; font-weight: 700; }
 
-        // Lưu vào máy khách
-        const tasks = JSON.parse(localStorage.getItem('my_private_tasks') || '[]');
-        tasks.push(newTask);
-        localStorage.setItem('my_private_tasks', JSON.stringify(tasks));
+        /* Nhập liệu: Tự động xuống dòng trên điện thoại nếu cần */
+        .input-group { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
 
-        // Hiển thị lên web
-        renderTask(newTask);
-        input.value = '';
-    }
+        input { 
+            flex: 1; 
+            padding: 14px; 
+            border: 2px solid #eee; 
+            border-radius: 12px; 
+            outline: none; 
+            font-size: 16px; /* Chặn tình trạng iPhone tự zoom khi focus */
+            transition: 0.3s;
+        }
 
-    // 3. XOÁ VIỆC (Xử lý tại máy khách)
-    function deleteTask(id, element) {
-        let tasks = JSON.parse(localStorage.getItem('my_private_tasks') || '[]');
-        tasks = tasks.filter(t => t.id !== id);
-        localStorage.setItem('my_private_tasks', JSON.stringify(tasks));
-        element.remove();
-    }
+        input:focus { border-color: #007bff; background: #f8fbff; }
 
-    // 4. HIỂN THỊ (Hàm hỗ trợ vẽ giao diện)
-    function renderTask(task) {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${task.content}</span>
-            <button class="btn-del" onclick="deleteTask(${task.id}, this.parentElement)">Xoá</button>
-        `;
-        document.getElementById('todoList').appendChild(li);
-    }
-</script>
+        button { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 600;
+            transition: 0.2s;
+            -webkit-tap-highlight-color: transparent; /* Xóa viền xanh khi chạm trên điện thoại */
+        }
 
-</body>
-</html>
+        .btn-add { background: #007bff; color: white; }
+        .btn-add:active { transform: scale(0.95); }
+
+        /* Danh sách việc cần làm */
+        ul { list-style: none; }
+        li { 
+            background: #ffffff; 
+            margin-bottom: 12px; 
+            padding: 15px; 
+            border-radius: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid #f0f0f0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-text { flex: 1; margin-right: 15px; color: #444; word-break: break-word; }
