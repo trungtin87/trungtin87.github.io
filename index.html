@@ -1,217 +1,964 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quán Tự Phục Vụ - ToDo Local</title>
-    <style>
-        /* --- GIAO DIỆN (CSS) --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #f4f7f9; 
-            display: flex; 
-            justify-content: center; 
-            min-height: 100vh; 
-            padding: 20px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VNLang — Lộ trình xây dựng</title>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --border: #1e2330;
+    --accent: #5b8dee;
+    --accent2: #38d9a9;
+    --warn: #f08c3a;
+    --text: #c9d1e0;
+    --muted: #5a6480;
+    --done: #38d9a9;
+    --active: #5b8dee;
+    --todo: #3a4060;
+    --radius: 8px;
+    --mono: 'JetBrains Mono', 'Fira Mono', monospace;
+  }
 
-        .container { 
-            background: #ffffff; 
-            width: 100%; 
-            max-width: 450px; 
-            padding: 25px; 
-            border-radius: 24px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            height: fit-content;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        h2 { color: #1f2937; text-align: center; margin-bottom: 25px; font-size: 24px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
 
-        .input-area { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 25px; 
-        }
+  header {
+    padding: 40px 32px 24px;
+    border-bottom: 1px solid var(--border);
+    max-width: 900px;
+    margin: 0 auto;
+  }
 
-        input { 
-            flex: 1; 
-            padding: 14px 18px; 
-            border: 2px solid #e5e7eb; 
-            border-radius: 14px; 
-            outline: none; 
-            font-size: 16px; /* Chống auto-zoom trên iPhone */
-            transition: all 0.2s;
-        }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(91,141,238,0.12);
+    border: 1px solid rgba(91,141,238,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
-        input:focus { border-color: #3b82f6; background: #fdfdfd; }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #e8edf8;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
 
-        .btn-add { 
-            background: #3b82f6; 
-            color: white; 
-            padding: 14px 22px; 
-            border: none; 
-            border-radius: 14px; 
-            font-weight: 600; 
-            cursor: pointer;
-            white-space: nowrap;
-        }
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    max-width: 520px;
+  }
 
-        .btn-add:active { transform: scale(0.95); }
+  .progress-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 20px;
+    align-items: center;
+  }
 
-        /* Danh sách hiển thị */
-        ul { list-style: none; }
+  .progress-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-right: 8px;
+    min-width: 60px;
+  }
 
-        li { 
-            background: #f9fafb; 
-            margin-bottom: 12px; 
-            padding: 16px; 
-            border-radius: 16px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border: 1px solid #f1f5f9;
-            animation: slideIn 0.3s ease-out;
-        }
+  .progress-seg {
+    height: 4px;
+    border-radius: 2px;
+    flex: 1;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  .progress-seg:hover { transform: scaleY(2); }
+  .progress-seg.done { background: var(--done); }
+  .progress-seg.active { background: var(--accent); }
 
-        .text { color: #374151; font-size: 16px; flex: 1; padding-right: 10px; word-break: break-all; }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
 
-        .btn-del { 
-            background: #fee2e2; 
-            color: #ef4444; 
-            border: none; 
-            padding: 8px 14px; 
-            border-radius: 10px; 
-            font-size: 13px; 
-            font-weight: 600;
-            cursor: pointer;
-        }
+  /* Phase card */
+  .phase {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
 
-        .btn-del:active { background: #ef4444; color: white; }
+  .phase:hover { border-color: #2a3050; }
 
-        .empty-state { text-align: center; color: #9ca3af; margin-top: 20px; font-style: italic; }
+  .phase-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
 
-        .footer { 
-            margin-top: 30px; 
-            padding-top: 15px;
-            border-top: 1px dashed #e5e7eb;
-            font-size: 11px; 
-            color: #9ca3af; 
-            text-align: center; 
-            line-height: 1.6;
-        }
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    min-width: 32px;
+    padding-top: 2px;
+    letter-spacing: 0.05em;
+  }
 
-        /* Responsive cho Mobile */
-        @media (max-width: 400px) {
-            .input-area { flex-direction: column; }
-            .btn-add { width: 100%; }
-        }
-    </style>
+  .phase-meta { flex: 1; }
+
+  .phase-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e8edf8;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .badge-done { background: rgba(56,217,169,0.15); color: var(--done); border: 1px solid rgba(56,217,169,0.3); }
+  .badge-active { background: rgba(91,141,238,0.15); color: var(--active); border: 1px solid rgba(91,141,238,0.3); }
+  .badge-todo { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+  .badge-key { background: rgba(240,140,58,0.15); color: var(--warn); border: 1px solid rgba(240,140,58,0.3); }
+
+  .phase-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    max-width: 600px;
+  }
+
+  .phase-duration {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    padding-top: 3px;
+  }
+
+  .chevron {
+    color: var(--muted);
+    font-size: 10px;
+    padding-top: 4px;
+    transition: transform 0.2s;
+  }
+
+  .phase.open .chevron { transform: rotate(90deg); }
+
+  .phase-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .phase.open .phase-body { display: block; }
+
+  .section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section:last-child { border-bottom: none; }
+
+  .section-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding-left: 16px;
+  }
+
+  .item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid transparent;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .item:hover { border-color: var(--border); background: rgba(255,255,255,0.04); }
+
+  .item-icon {
+    font-size: 14px;
+    min-width: 20px;
+    margin-top: 1px;
+  }
+
+  .item-content { flex: 1; }
+
+  .item-name {
+    font-size: 13.5px;
+    color: #d0d8ec;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .item-note {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .item-tags {
+    display: flex;
+    gap: 4px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+  }
+
+  .itag {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+  }
+
+  .itag-warn { color: var(--warn); background: rgba(240,140,58,0.08); border-color: rgba(240,140,58,0.2); }
+  .itag-ok { color: var(--done); background: rgba(56,217,169,0.08); border-color: rgba(56,217,169,0.2); }
+  .itag-blue { color: var(--accent); background: rgba(91,141,238,0.08); border-color: rgba(91,141,238,0.2); }
+
+  /* Architecture diagram */
+  .arch {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text);
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    line-height: 1.9;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .arch .hl { color: var(--accent2); }
+  .arch .hl2 { color: var(--accent); }
+  .arch .hl3 { color: var(--warn); }
+
+  /* Milestone connector */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .milestone {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 10px 0;
+  }
+
+  .ms-dot {
+    min-width: 10px;
+    margin-top: 6px;
+    position: relative;
+  }
+
+  .ms-dot::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--muted);
+  }
+
+  .ms-dot.done::before { background: var(--done); border-color: var(--done); }
+  .ms-dot.active::before { background: var(--accent); border-color: var(--accent); }
+
+  .ms-dot::after {
+    content: '';
+    display: block;
+    width: 1px;
+    background: var(--border);
+    height: 100%;
+    position: absolute;
+    left: 3px;
+    top: 10px;
+  }
+
+  .milestone:last-child .ms-dot::after { display: none; }
+
+  .ms-text {
+    padding-bottom: 16px;
+    flex: 1;
+  }
+
+  .ms-title { font-size: 13px; color: #d0d8ec; font-weight: 500; }
+  .ms-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+  footer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 32px 40px;
+    color: var(--muted);
+    font-size: 11.5px;
+    font-family: var(--mono);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h2>📋 Việc Cần Làm</h2>
-    
-    <div class="input-area">
-        <input type="text" id="taskInput" placeholder="Hôm nay bạn cần làm gì?" autocomplete="off">
-        <button class="btn-add" onclick="handleAddTask()">Thêm mới</button>
+<header>
+  <div class="tag">VNLang Universal Platform</div>
+  <h1>Lộ trình xây dựng VNLang</h1>
+  <p class="subtitle">Từ compiler đơn ngôn ngữ → Universal AST Platform. Lộ trình tự học và tự xây dựng theo từng giai đoạn.</p>
+  <div class="progress-bar">
+    <span class="progress-label">PHASE 1–6</span>
+    <div class="progress-seg done" title="Phase 1 — Nền tảng compiler"></div>
+    <div class="progress-seg done" title="Phase 2 — VNLang core language"></div>
+    <div class="progress-seg active" title="Phase 3 — UAST core"></div>
+    <div class="progress-seg" title="Phase 4 — Backend generators"></div>
+    <div class="progress-seg" title="Phase 5 — Multi-frontend"></div>
+    <div class="progress-seg" title="Phase 6 — Platform"></div>
+  </div>
+</header>
+
+<main>
+
+<!-- PHASE 1 -->
+<div class="phase open" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">P.01</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        Nền tảng Compiler
+        <span class="badge badge-done">Nên đã có cơ sở</span>
+      </div>
+      <div class="phase-desc">Hiểu vững Lexer → Parser → AST. Đây là nền tảng không thể bỏ qua.</div>
+    </div>
+    <div class="phase-duration">3–4 tuần</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+
+    <div class="section">
+      <div class="section-title">📚 Cần học</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">🔤</div>
+          <div class="item-content">
+            <div class="item-name">Lexical Analysis (Lexer / Tokenizer)</div>
+            <div class="item-note">Regex-based token recognition, whitespace/comment handling, error recovery. Tự viết tokenizer bằng tay, không dùng thư viện.</div>
+            <div class="item-tags"><span class="itag itag-warn">bắt buộc</span><span class="itag">Python hoặc Rust</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🌳</div>
+          <div class="item-content">
+            <div class="item-name">Recursive Descent Parsing</div>
+            <div class="item-note">Đây là kỹ thuật parser phù hợp nhất cho VNLang. Học cách parse expression với precedence (Pratt Parsing).</div>
+            <div class="item-tags"><span class="itag itag-warn">bắt buộc</span><span class="itag itag-blue">Pratt Parser</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📐</div>
+          <div class="item-content">
+            <div class="item-name">AST Design — cấu trúc node</div>
+            <div class="item-note">Học cách thiết kế AST node (tagged union / dataclass). Mỗi node cần: type, children, source location (line/col).</div>
+            <div class="item-tags"><span class="itag itag-warn">bắt buộc</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔍</div>
+          <div class="item-content">
+            <div class="item-name">Semantic Analysis cơ bản</div>
+            <div class="item-note">Symbol table, scope resolution, type inference đơn giản. Chưa cần full type system.</div>
+            <div class="item-tags"><span class="itag">tuần 3–4</span></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <ul id="listContainer">
-        </ul>
-
-    <div class="footer">
-        <b>Triết lý Quán Tự Phục Vụ:</b><br>
-        Dữ liệu nằm tại LocalStorage trên thiết bị của bạn.<br>
-        Máy chủ (Github) không biết và không lưu bất cứ thứ gì.
+    <div class="section">
+      <div class="section-title">🔨 Cần xây dựng</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">✅</div>
+          <div class="item-content">
+            <div class="item-name">VNLang Lexer v1</div>
+            <div class="item-note">Token hóa toàn bộ keywords tiếng Việt: khai_bao_bien, neu, lap, ham, lop, tra_ve…</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">✅</div>
+          <div class="item-content">
+            <div class="item-name">VNLang Parser v1 → VNLang AST</div>
+            <div class="item-note">Parse được: khai báo biến, hàm, điều kiện, vòng lặp, struct. Chưa cần generic, annotation.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">✅</div>
+          <div class="item-content">
+            <div class="item-name">Test suite cho Lexer + Parser</div>
+            <div class="item-note">Tối thiểu 50 test case. Mỗi construct VNLang phải có test.</div>
+            <div class="item-tags"><span class="itag itag-ok">pytest / unittest</span></div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="section">
+      <div class="section-title">📖 Tài nguyên gợi ý</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">📗</div>
+          <div class="item-content">
+            <div class="item-name">Crafting Interpreters — Robert Nystrom</div>
+            <div class="item-note">Free online. Đọc phần I (scanning) và phần II (parsing). Quan trọng nhất cho giai đoạn này.</div>
+            <div class="item-tags"><span class="itag itag-ok">craftinginterpreters.com</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📙</div>
+          <div class="item-content">
+            <div class="item-name">Pratt Parsing — Simple Top Down Parsing in Python (Eli Bendersky)</div>
+            <div class="item-note">Để parse expression đúng precedence (a + b * c).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
+<!-- PHASE 2 -->
+<div class="phase" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">P.02</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        VNLang Core Language — Hoàn thiện đặc tả
+        <span class="badge badge-active">đang làm</span>
+      </div>
+      <div class="phase-desc">Chốt toàn bộ syntax VNLang. Viết grammar chính thức. Resolve mọi ambiguity trước khi build.</div>
+    </div>
+    <div class="phase-duration">2–3 tuần</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+
+    <div class="section">
+      <div class="section-title">⚠️ Những điểm đặc tả còn thiếu / cần quyết định</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">❓</div>
+          <div class="item-content">
+            <div class="item-name">Type annotation — bắt buộc hay tùy chọn?</div>
+            <div class="item-note">Đặc tả hiện tại có <code>chuoi ten; so tuoi;</code> trong struct nhưng khai báo biến lại không có type. Cần quyết định: VNLang có static typing không, hay infer hoàn toàn?</div>
+            <div class="item-tags"><span class="itag itag-warn">cần quyết định</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">❓</div>
+          <div class="item-content">
+            <div class="item-name">Semicolon — bắt buộc hay tự động (ASI)?</div>
+            <div class="item-note">Hiện tại có <code>;</code> ở một số nơi. Nếu bắt buộc, Lexer đơn giản hơn. Nếu optional, cần implement ASI rules như JavaScript.</div>
+            <div class="item-tags"><span class="itag itag-warn">cần quyết định</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">❓</div>
+          <div class="item-content">
+            <div class="item-name">Operator <code>i++</code> và <code>dem++</code> — prefix hay postfix?</div>
+            <div class="item-note">Cú pháp có thể xung đột với expression parser. Nên làm rõ trong grammar.</div>
+            <div class="item-tags"><span class="itag itag-warn">cần quyết định</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">❓</div>
+          <div class="item-content">
+            <div class="item-name">String interpolation?</div>
+            <div class="item-note">Có template literal như VNScript không? Ví dụ: <code>"Xin chao {ten}"</code>. Ảnh hưởng đến Lexer phức tạp.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">❓</div>
+          <div class="item-content">
+            <div class="item-name">Visibility / access modifier?</div>
+            <div class="item-note">Class và struct có <code>cong_khai</code> / <code>rieng_tu</code> (public/private) không? Quan trọng cho mapping sang Java/C#.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔨 Cần xây dựng</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">📄</div>
+          <div class="item-content">
+            <div class="item-name">Formal Grammar file (EBNF hoặc PEG)</div>
+            <div class="item-note">Viết file <code>vnlang.ebnf</code> hoặc <code>vnlang.peg</code> mô tả toàn bộ syntax. Đây là "source of truth" cho parser.</div>
+            <div class="item-tags"><span class="itag itag-warn">quan trọng</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📄</div>
+          <div class="item-content">
+            <div class="item-name">Keyword registry đầy đủ</div>
+            <div class="item-note">File JSON/TOML map keyword VNLang → UAST node type. Dùng để cả parser và AI đều có thể tham chiếu.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PHASE 3 -->
+<div class="phase" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">P.03</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        Universal AST (UAST) — Trái tim của hệ thống
+        <span class="badge badge-key">cốt lõi</span>
+      </div>
+      <div class="phase-desc">UAST là tài sản quan trọng nhất. Thiết kế tốt ở đây = toàn bộ hệ thống hoạt động tốt.</div>
+    </div>
+    <div class="phase-duration">4–6 tuần</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+
+    <div class="section">
+      <div class="section-title">📚 Cần học</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">🔬</div>
+          <div class="item-content">
+            <div class="item-name">Nghiên cứu các UAST đang tồn tại</div>
+            <div class="item-note">Đọc spec của: <b>Tree-sitter</b> (GitHub), <b>ESTree</b> (JavaScript AST standard), <b>ASDL</b> (Python's AST), <b>Roslyn syntax tree</b> (C#). Không cần dùng — chỉ cần hiểu design patterns của họ.</div>
+            <div class="item-tags"><span class="itag itag-blue">tree-sitter</span><span class="itag itag-blue">ESTree</span><span class="itag itag-blue">ASDL</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🏗️</div>
+          <div class="item-content">
+            <div class="item-name">Visitor Pattern cho AST traversal</div>
+            <div class="item-note">Cách duy nhất để xử lý AST extensible. Semantic analyzer, type checker, code generator đều dùng pattern này.</div>
+            <div class="item-tags"><span class="itag itag-warn">bắt buộc</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔄</div>
+          <div class="item-content">
+            <div class="item-name">AST → AST transformation</div>
+            <div class="item-note">VNLang AST → UAST là một bước transform. Học cách viết AST lowering / desugaring.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔨 Cần xây dựng — UAST Specification</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">📐</div>
+          <div class="item-content">
+            <div class="item-name">UAST Node Schema (JSON Schema hoặc dataclass)</div>
+            <div class="item-note">Mỗi node phải có: <code>node_type</code>, <code>children[]</code>, <code>metadata{}</code>. Metadata gồm: <code>source_language</code>, <code>original_keyword</code>, <code>line</code>, <code>col</code>.</div>
+            <div class="item-tags"><span class="itag itag-warn">thiết kế trước, code sau</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔗</div>
+          <div class="item-content">
+            <div class="item-name">VNLang AST → UAST Lowering Pass</div>
+            <div class="item-note">Transform VNLang-specific nodes sang canonical UAST nodes. Ví dụ: <code>VN_IF</code> → <code>IF{condition, then, else}</code>.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔁</div>
+          <div class="item-content">
+            <div class="item-name">UAST → VNLang Round-trip test</div>
+            <div class="item-note">VNLang → UAST → VNLang phải cho ra code gần như nguyên dạng. Đây là test quan trọng nhất cho UAST design.</div>
+            <div class="item-tags"><span class="itag itag-ok">round-trip</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📊</div>
+          <div class="item-content">
+            <div class="item-name">Type System mapping table</div>
+            <div class="item-note">File TOML/JSON: <code>so_nguyen</code> → <code>{python:"int", rust:"i64", js:"number", java:"int", go:"int64"}</code>. Đây là lookup table dùng chung cho mọi backend.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🏛️ Kiến trúc UAST (sơ lược)</div>
+      <div class="arch"><span class="hl">UAST Node</span>
+├── node_type: <span class="hl2">NodeKind</span>   (enum: VAR_DECL, FUNCTION, IF, LOOP…)
+├── id: <span class="hl2">string</span>            (unique per node)
+├── children: <span class="hl2">Node[]</span>
+├── props: <span class="hl2">Dict</span>           (node-specific: name, op, value…)
+└── meta: <span class="hl2">SourceMeta</span>
+    ├── source_lang: <span class="hl3">"VNLang" | "Python" | "Rust"…</span>
+    ├── original_keyword: <span class="hl3">"khai_bao_bien"</span>
+    ├── line: <span class="hl3">10</span>
+    └── col: <span class="hl3">5</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PHASE 4 -->
+<div class="phase" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">P.04</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        Backend Generators — Xuất ra ngôn ngữ thật
+        <span class="badge badge-todo">tiếp theo</span>
+      </div>
+      <div class="phase-desc">UAST → Python, JavaScript, Rust. Mỗi backend là một visitor riêng biệt.</div>
+    </div>
+    <div class="phase-duration">6–8 tuần</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+
+    <div class="section">
+      <div class="section-title">📚 Cần học</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">🖨️</div>
+          <div class="item-content">
+            <div class="item-name">Pretty Printing / Code Generation</div>
+            <div class="item-note">Kỹ thuật emit code với indentation đúng, line wrapping. Đọc về "pretty printer combinators" (Wadler, Lindig).</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🐍</div>
+          <div class="item-content">
+            <div class="item-name">Python AST nội bộ (ast module)</div>
+            <div class="item-note">Dùng <code>ast.unparse()</code> để hiểu cách Python emit code từ AST. Cũng dùng để test: UAST → Python AST → compile → chạy.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🦀</div>
+          <div class="item-content">
+            <div class="item-name">Rust syntax basics (cho Rust backend)</div>
+            <div class="item-note">Ownership, borrowing ảnh hưởng đến cách generate code. Một số UAST constructs không map 1-1 sang Rust — cần handle đặc biệt.</div>
+            <div class="item-tags"><span class="itag itag-warn">khó nhất</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔨 Thứ tự xây dựng backend</div>
+      <div class="timeline">
+        <div class="milestone">
+          <div class="ms-dot active"></div>
+          <div class="ms-text">
+            <div class="ms-title">1. Python Generator (ưu tiên đầu tiên)</div>
+            <div class="ms-sub">Dễ nhất, không có type system phức tạp. Dùng để validate UAST design. Mục tiêu: UAST → .py chạy được.</div>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="ms-dot"></div>
+          <div class="ms-text">
+            <div class="ms-title">2. JavaScript Generator</div>
+            <div class="ms-sub">Gần VNScript nhất. Async/await, arrow functions, template literals cần mapping cẩn thận.</div>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="ms-dot"></div>
+          <div class="ms-text">
+            <div class="ms-title">3. Go Generator</div>
+            <div class="ms-sub">Typed, simple syntax, không có class — tốt để test struct/interface mapping.</div>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="ms-dot"></div>
+          <div class="ms-text">
+            <div class="ms-title">4. Rust Generator</div>
+            <div class="ms-sub">Phức tạp nhất do ownership model. Làm sau khi UAST đã ổn định.</div>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="ms-dot"></div>
+          <div class="ms-text">
+            <div class="ms-title">5. Java / C# Generator</div>
+            <div class="ms-sub">OOP mapping tốt nhất. Class, interface, generic, access modifiers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⚠️ Những vấn đề khó cần giải quyết</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">⚡</div>
+          <div class="item-content">
+            <div class="item-name">Semantic gap giữa các ngôn ngữ</div>
+            <div class="item-note">VNLang <code>tu_dien</code> → Python <code>dict</code> → Rust <code>HashMap</code> → Go <code>map</code>. Cần một lớp "semantic adapter" cho từng backend xử lý những construct không tồn tại trong ngôn ngữ đích.</div>
+            <div class="item-tags"><span class="itag itag-warn">design challenge</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔒</div>
+          <div class="item-content">
+            <div class="item-name">Null safety / error handling model</div>
+            <div class="item-note">VNLang có <code>thu/bat</code> (try/catch). Rust không có exception — phải map sang <code>Result&lt;T,E&gt;</code>. Cần quyết định UAST có một model lỗi trung lập không?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PHASE 5 -->
+<div class="phase" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">P.05</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        Multi-Frontend — Python/JS → UAST
+        <span class="badge badge-todo">tương lai</span>
+      </div>
+      <div class="phase-desc">Đây là điểm biến VNLang thành Universal Platform thật sự. Parser cho Python/JS → UAST.</div>
+    </div>
+    <div class="phase-duration">8–12 tuần</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+
+    <div class="section">
+      <div class="section-title">📚 Cần học</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">🌲</div>
+          <div class="item-content">
+            <div class="item-name">Tree-sitter — Parse mọi ngôn ngữ</div>
+            <div class="item-note">Không nên tự viết parser cho Python hay Rust từ đầu. Tree-sitter có parser cho 100+ ngôn ngữ, output là CST — có thể transform sang UAST.</div>
+            <div class="item-tags"><span class="itag itag-ok">tái sử dụng</span><span class="itag itag-blue">tree-sitter.github.io</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔄</div>
+          <div class="item-content">
+            <div class="item-name">CST → UAST transformation</div>
+            <div class="item-note">Tree-sitter output là CST (Concrete Syntax Tree). Cần viết "lowering pass" để tạo UAST canonical từ đó. Đây là công việc chính của phase này.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔨 Cần xây dựng</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">🐍</div>
+          <div class="item-content">
+            <div class="item-name">Python → UAST Frontend</div>
+            <div class="item-note">Dùng Python's built-in <code>ast</code> module (dễ hơn Tree-sitter cho Python). Viết visitor transform Python AST → UAST.</div>
+            <div class="item-tags"><span class="itag itag-ok">làm trước</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🟨</div>
+          <div class="item-content">
+            <div class="item-name">JavaScript → UAST Frontend</div>
+            <div class="item-note">Dùng <code>acorn</code> hoặc <code>@babel/parser</code> để parse JS → ESTree → UAST. Node.js-based.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🔁</div>
+          <div class="item-content">
+            <div class="item-name">Cross-language round-trip tests</div>
+            <div class="item-note">Python → UAST → VNLang. VNLang → UAST → Python. Kết quả có thể không identical nhưng phải semantically equivalent.</div>
+            <div class="item-tags"><span class="itag itag-warn">milestone quan trọng</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PHASE 6 -->
+<div class="phase" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">P.06</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        Universal Platform — Tooling, DX, Ecosystem
+        <span class="badge badge-todo">dài hạn</span>
+      </div>
+      <div class="phase-desc">CLI đầy đủ, Language Server Protocol, playground, package manager, AI integration.</div>
+    </div>
+    <div class="phase-duration">ongoing</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+
+    <div class="section">
+      <div class="section-title">🔨 Cần xây dựng (theo thứ tự ưu tiên)</div>
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">⌨️</div>
+          <div class="item-content">
+            <div class="item-name">CLI đầy đủ: <code>vnlang compile</code>, <code>vnlang run</code>, <code>vnlang translate</code></div>
+            <div class="item-note">Giai đoạn này cần CLI production-ready với error reporting tốt, watch mode, source maps.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🖥️</div>
+          <div class="item-content">
+            <div class="item-name">Language Server Protocol (LSP)</div>
+            <div class="item-note">Để VS Code / Neovim có autocomplete, error highlighting cho VNLang. Đây là yếu tố quyết định người dùng có dùng không.</div>
+            <div class="item-tags"><span class="itag itag-blue">microsoft/language-server-protocol</span></div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🌐</div>
+          <div class="item-content">
+            <div class="item-name">Web Playground</div>
+            <div class="item-note">VNLang online compiler chạy trong browser. UAST + generators compile sang JS có thể chạy trong WebAssembly hoặc Node.js backend.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">🤖</div>
+          <div class="item-content">
+            <div class="item-name">AI Integration — Reflection Metadata</div>
+            <div class="item-note">UAST Metadata (<code>description</code>, <code>author</code>, <code>intent</code>) cho phép AI đọc và sinh code VNLang. Đây là differentiator lớn nhất.</div>
+            <div class="item-tags"><span class="itag itag-ok">ai_friendly</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- KIẾN THỨC NỀN TẢNG -->
+<div class="phase" onclick="toggle(this)">
+  <div class="phase-header">
+    <div class="phase-num">🧠</div>
+    <div class="phase-meta">
+      <div class="phase-title">
+        Kiến thức nền tảng cần bổ sung song song
+        <span class="badge badge-key">liên tục</span>
+      </div>
+      <div class="phase-desc">Những thứ cần học dần, không nhất thiết học xong rồi mới làm.</div>
+    </div>
+    <div class="phase-duration">học dần</div>
+    <div class="chevron">▶</div>
+  </div>
+  <div class="phase-body">
+    <div class="section">
+      <div class="item-list">
+        <div class="item">
+          <div class="item-icon">📘</div>
+          <div class="item-content">
+            <div class="item-name">Type Theory cơ bản</div>
+            <div class="item-note">Hindley-Milner type inference. Cần để implement type system cho UAST về sau. Sách: "Types and Programming Languages" (TAPL) — đọc phần đầu.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📘</div>
+          <div class="item-content">
+            <div class="item-name">Formal Grammar (BNF / EBNF / PEG)</div>
+            <div class="item-note">Không cần học sâu về automata theory. Chỉ cần đọc được và viết được grammar spec. Quan trọng để document VNLang chính thức.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📘</div>
+          <div class="item-content">
+            <div class="item-name">Data serialization: JSON Schema, MessagePack</div>
+            <div class="item-note">UAST sẽ cần serialize (để cache, để AI đọc, để tool khác consume). JSON Schema để validate UAST nodes.</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-icon">📘</div>
+          <div class="item-content">
+            <div class="item-name">Compiler IR (Intermediate Representation) patterns</div>
+            <div class="item-note">Đọc về LLVM IR, WebAssembly text format. UAST là high-level IR — hiểu IR design giúp UAST tốt hơn.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <span>VNLang Universal Platform — Lộ trình v1.0</span>
+  <span>P.01→P.03 là foundation · P.04→P.05 là impact · P.06 là ecosystem</span>
+</footer>
+
 <script>
-    /* --- BỘ NÃO XỬ LÝ (JS) --- */
+function toggle(el) {
+  // Prevent toggle if clicking inside content
+  el.classList.toggle('open');
+}
 
-    // 1. Khi vừa mở ứng dụng: Quét ngay dữ liệu cũ trên máy
-    document.addEventListener('DOMContentLoaded', () => {
-        renderAllTasks();
-    });
-
-    // 2. Hàm thêm công việc mới
-    function handleAddTask() {
-        const input = document.getElementById('taskInput');
-        const content = input.value.trim();
-
-        if (content === "") {
-            alert("Vui lòng nhập nội dung!");
-            return;
-        }
-
-        const newTask = {
-            id: Date.now(),
-            content: content
-        };
-
-        // Lấy dữ liệu cũ -> Thêm mới -> Lưu lại vào máy khách (LocalStorage)
-        const tasks = getAllTasksFromLocal();
-        tasks.push(newTask);
-        saveTasksToLocal(tasks);
-
-        // Cập nhật giao diện
-        input.value = "";
-        renderAllTasks();
-        input.focus();
-    }
-
-    // 3. Hàm xóa công việc
-    function handleDeleteTask(id) {
-        let tasks = getAllTasksFromLocal();
-        tasks = tasks.filter(task => task.id !== id);
-        saveTasksToLocal(tasks);
-        renderAllTasks();
-    }
-
-    // 4. Các hàm hỗ trợ đọc/ghi vào LocalStorage (Ngăn kéo của khách)
-    function getAllTasksFromLocal() {
-        const data = localStorage.getItem('my_todo_data');
-        return data ? JSON.parse(data) : [];
-    }
-
-    function saveTasksToLocal(tasks) {
-        localStorage.setItem('my_todo_data', JSON.stringify(tasks));
-    }
-
-    // 5. Hàm hiển thị danh sách lên màn hình
-    function renderAllTasks() {
-        const listContainer = document.getElementById('listContainer');
-        const tasks = getAllTasksFromLocal();
-
-        if (tasks.length === 0) {
-            listContainer.innerHTML = '<div class="empty-state">Chưa có việc nào, hãy thêm việc mới!</div>';
-            return;
-        }
-
-        listContainer.innerHTML = ""; // Xóa trắng để vẽ lại
-        tasks.forEach(task => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span class="text">${task.content}</span>
-                <button class="btn-del" onclick="handleDeleteTask(${task.id})">Xoá</button>
-            `;
-            listContainer.appendChild(li);
-        });
-    }
-
-    // Lắng nghe phím Enter để thêm việc cho nhanh
-    document.getElementById('taskInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleAddTask();
-    });
+// Open first phase by default — already done in HTML
 </script>
-
 </body>
 </html>
