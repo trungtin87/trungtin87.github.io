@@ -1,19 +1,15 @@
 {
-  "name": "Bùi Gia Trang",
-  "short_name": "Bùi Gia Trang",
-  "description": "Thư phòng số của Bùi Trung Tín — tri thức, kinh nghiệm và dự án mang tinh thần Đạo giáo hiện đại.",
+  "name": "Huyền Không Thư Quán - Bùi Gia Trang",
+  "short_name": "Huyền Không Thư Quán",
+  "description": "Thư phòng số của Bùi Trung Tín — Đạo pháp tự nhiên.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#111111",
   "lang": "vi",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
   "icons": [
-    {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    }
+    { "src": "/assets/images/logo.png", "sizes": "256x256", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/images/logo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }

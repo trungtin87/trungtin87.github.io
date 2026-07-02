@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://buigiatrang.vn/sitemap.xml
+Sitemap: https://trungtin87.github.io/sitemap.xml

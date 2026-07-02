@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
-  <title>Bùi Gia Trang</title>
-  <link>https://buigiatrang.vn/</link>
-  <description>Thư phòng số của Bùi Trung Tín — tri thức, kinh nghiệm và dự án mang tinh thần Đạo giáo hiện đại.</description>
+  <title>Huyền Không Thư Quán</title>
+  <link>https://trungtin87.github.io/</link>
+  <description>Thư phòng số của Bùi Trung Tín — Đạo pháp tự nhiên.</description>
   <language>vi</language>
   <item>
-    <title>Vô vi trong lập trình: viết ít hơn, đúng hơn</title>
-    <link>https://buigiatrang.vn/posts/vo-vi-trong-lap-trinh/</link>
-    <guid>https://buigiatrang.vn/posts/vo-vi-trong-lap-trinh/</guid>
-    <pubDate>2026-06-18</pubDate>
-    <description>Tư tưởng "vô vi" của Đạo giáo — không cưỡng cầu, thuận theo tự nhiên — có thể trở thành một nguyên lý thiết kế phần mềm: giảm trạng thái dư thừa, để hệ thống vận hành theo quy luật của chính nó.</description>
+    <title>Vô vi trong tối ưu hệ thống</title>
+    <link>https://trungtin87.github.io/blog/posts/vo-vi-va-toi-uu.html</link>
+    <guid>https://trungtin87.github.io/blog/posts/vo-vi-va-toi-uu.html</guid>
+    <pubDate>Sun, 28 Jun 2026 00:00:00 +0700</pubDate>
+    <description>Tối ưu bằng cách bớt đi, không phải thêm vào — ghi chú từ việc dọn dẹp một hệ thống chạy quá nhiều tiến trình không cần thiết.</description>
   </item>
   <item>
-    <title>Âm - Dương trong kiến trúc hệ thống</title>
-    <link>https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/</link>
-    <guid>https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/</guid>
-    <pubDate>2026-06-05</pubDate>
-    <description>Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau.</description>
+    <title>Âm — Dương trong kiến trúc phần mềm</title>
+    <link>https://trungtin87.github.io/blog/posts/am-duong-trong-lap-trinh.html</link>
+    <guid>https://trungtin87.github.io/blog/posts/am-duong-trong-lap-trinh.html</guid>
+    <pubDate>Mon, 15 Jun 2026 00:00:00 +0700</pubDate>
+    <description>Đối lập nhưng bổ sung — đồng bộ và bất đồng bộ, trạng thái và bất biến, đơn giản và đầy đủ.</description>
   </item>
   <item>
-    <title>Thư phòng số: vì sao tôi tự lưu giữ tri thức của mình</title>
-    <link>https://buigiatrang.vn/posts/thu-phong-so-ghi-chep-tri-thuc/</link>
-    <guid>https://buigiatrang.vn/posts/thu-phong-so-ghi-chep-tri-thuc/</guid>
-    <pubDate>2026-05-20</pubDate>
-    <description>Một nơi lưu trữ những gì đã học, đã làm, đã sai — không phụ thuộc vào bất kỳ nền tảng nào khác ngoài chính mình.</description>
+    <title>Đạo pháp tự nhiên — khi lập trình học theo dòng nước</title>
+    <link>https://trungtin87.github.io/blog/posts/dao-phap-tu-nhien.html</link>
+    <guid>https://trungtin87.github.io/blog/posts/dao-phap-tu-nhien.html</guid>
+    <pubDate>Tue, 02 Jun 2026 00:00:00 +0700</pubDate>
+    <description>Tại sao những hệ thống bền vững nhất thường là những hệ thống ít can thiệp nhất, và điều đó nói gì với người viết phần mềm.</description>
   </item>
 </channel>
 </rss>

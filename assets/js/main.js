@@ -1,50 +1,51 @@
-// Bùi Gia Trang — main.js (ES Module, không phụ thuộc thư viện ngoài)
+// Bùi Gia Trang — main.js
+// Thuần JavaScript ES Modules. Không thư viện ngoài.
+import { searchIndex } from "./search-data.js";
 
-/* ---------- Dark / Light mode (Âm - Dương) ---------- */
-const THEME_KEY = "buigiatrang-theme";
+const THEME_KEY = "hktq-theme";
 
-function applyTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  const btn = document.querySelector(".theme-toggle");
-  if (btn) btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-}
-
+/* ---------------- Âm / Dương — chuyển giao diện sáng-tối ---------------- */
 function initTheme() {
-  const saved = localStorage.getItem(THEME_KEY);
-  if (saved) applyTheme(saved);
+  const root = document.documentElement;
+  const stored = localStorage.getItem(THEME_KEY);
+  if (stored) root.setAttribute("data-theme", stored);
 
-  const btn = document.querySelector(".theme-toggle");
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    const current = document.documentElement.getAttribute("data-theme") ||
+  const toggle = document.querySelector("[data-theme-toggle]");
+  if (!toggle) return;
+
+  toggle.addEventListener("click", () => {
+    const current =
+      root.getAttribute("data-theme") ||
       (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     const next = current === "dark" ? "light" : "dark";
-    applyTheme(next);
+    root.setAttribute("data-theme", next);
     localStorage.setItem(THEME_KEY, next);
   });
 }
 
-/* ---------- Menu di động ---------- */
-function initMobileMenu() {
-  const toggle = document.querySelector(".menu-toggle");
-  const menu = document.querySelector(".nav-menu");
-  if (!toggle || !menu) return;
-  toggle.addEventListener("click", () => {
-    const isOpen = menu.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+/* ---------------- Menu di động ---------------- */
+function initMobileNav() {
+  const btn = document.querySelector("[data-menu-toggle]");
+  const nav = document.querySelector("[data-nav]");
+  if (!btn || !nav) return;
+
+  btn.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("is-open");
+    btn.setAttribute("aria-expanded", String(isOpen));
   });
-  menu.querySelectorAll("a").forEach((a) => {
+
+  nav.querySelectorAll("a").forEach((a) =>
     a.addEventListener("click", () => {
-      menu.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
-    });
-  });
+      nav.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    })
+  );
 }
 
-/* ---------- Highlight menu theo trang hiện tại ---------- */
-function initActiveMenu() {
+/* ---------------- Highlight mục menu hiện tại ---------------- */
+function highlightActiveMenu() {
   const path = window.location.pathname.replace(/index\.html$/, "");
-  document.querySelectorAll(".nav-menu a").forEach((a) => {
+  document.querySelectorAll(".nav-list a").forEach((a) => {
     const href = a.getAttribute("href");
     if (!href) return;
     const normalized = href.replace(/index\.html$/, "");
@@ -54,153 +55,212 @@ function initActiveMenu() {
   });
 }
 
-/* ---------- Tìm kiếm bài viết ---------- */
-async function initSearch() {
-  const toggle = document.querySelector(".search-toggle");
-  const panel = document.querySelector(".search-panel");
-  const input = document.querySelector(".search-input");
-  const results = document.querySelector(".search-results");
-  if (!toggle || !panel || !input || !results) return;
-
-  let index = null;
-
-  toggle.addEventListener("click", async () => {
-    const isOpen = panel.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    if (isOpen) {
-      input.focus();
-      if (!index) {
-        try {
-          const res = await fetch(rootPath() + "assets/search-index.json");
-          index = await res.json();
-        } catch (e) {
-          index = [];
-        }
-      }
-    }
-  });
-
-  input.addEventListener("input", () => {
-    const q = input.value.trim().toLowerCase();
-    results.innerHTML = "";
-    if (!q || !index) return;
-    const matches = index.filter((item) =>
-      item.title.toLowerCase().includes(q) ||
-      item.excerpt.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q)
-    ).slice(0, 8);
-    if (matches.length === 0) {
-      results.innerHTML = '<p class="search-empty">Không tìm thấy bài viết phù hợp.</p>';
-      return;
-    }
-    matches.forEach((item) => {
-      const a = document.createElement("a");
-      a.href = rootPath() + item.url;
-      a.textContent = item.title;
-      results.appendChild(a);
-    });
-  });
-}
-
-function rootPath() {
-  const depth = document.documentElement.getAttribute("data-root") || "";
-  return depth;
-}
-
-/* ---------- Mục lục tự động + highlight khi cuộn ---------- */
-function initTOC() {
-  const article = document.querySelector(".article-body");
-  const tocList = document.querySelector(".toc ul");
-  if (!article || !tocList) return;
-
-  const headings = article.querySelectorAll("h2, h3");
-  if (headings.length === 0) {
-    const tocEl = document.querySelector(".toc");
-    if (tocEl) tocEl.style.display = "none";
-    return;
-  }
-
-  headings.forEach((h, i) => {
-    if (!h.id) h.id = "muc-" + i;
-    const li = document.createElement("li");
-    li.style.paddingLeft = h.tagName === "H3" ? "1em" : "0";
-    const a = document.createElement("a");
-    a.href = "#" + h.id;
-    a.textContent = h.textContent;
-    li.appendChild(a);
-    tocList.appendChild(li);
-  });
-
-  const links = tocList.querySelectorAll("a");
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          links.forEach((l) => l.classList.remove("active"));
-          const active = tocList.querySelector(`a[href="#${entry.target.id}"]`);
-          if (active) active.classList.add("active");
-        }
-      });
-    },
-    { rootMargin: "-80px 0px -70% 0px" }
-  );
-  headings.forEach((h) => observer.observe(h));
-}
-
-/* ---------- Đếm thời gian đọc ---------- */
-function initReadingTime() {
-  const article = document.querySelector(".article-body");
-  const target = document.querySelector("[data-reading-time]");
-  if (!article || !target) return;
-  const words = article.textContent.trim().split(/\s+/).length;
-  const minutes = Math.max(1, Math.round(words / 200));
-  target.textContent = minutes + " phút đọc";
-}
-
-/* ---------- Copy link bài viết ---------- */
-function initCopyLink() {
-  const btn = document.querySelector("[data-copy-link]");
-  if (!btn) return;
-  btn.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      const original = btn.textContent;
-      btn.textContent = "Đã sao chép liên kết";
-      setTimeout(() => (btn.textContent = original), 2000);
-    } catch (e) {
-      /* im lặng bỏ qua nếu trình duyệt không hỗ trợ */
-    }
-  });
-}
-
-/* ---------- Back to top ---------- */
+/* ---------------- Về đầu trang ---------------- */
 function initBackToTop() {
-  const btn = document.querySelector(".back-to-top");
+  const btn = document.querySelector("[data-back-to-top]");
   if (!btn) return;
-  window.addEventListener("scroll", () => {
-    btn.classList.toggle("visible", window.scrollY > 500);
-  }, { passive: true });
+  const onScroll = () => {
+    btn.classList.toggle("is-visible", window.scrollY > 640);
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
   btn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
 
-/* ---------- Lazy loading ảnh (dự phòng cho trình duyệt cũ) ---------- */
-function initLazyImages() {
-  const imgs = document.querySelectorAll("img:not([loading])");
-  imgs.forEach((img) => img.setAttribute("loading", "lazy"));
+/* ---------------- Tìm kiếm bài viết ---------------- */
+function initSearch() {
+  const openBtn = document.querySelector("[data-search-open]");
+  const panel = document.querySelector("[data-search-panel]");
+  if (!openBtn || !panel) return;
+  const input = panel.querySelector("[data-search-input]");
+  const results = panel.querySelector("[data-search-results]");
+
+  const render = (query) => {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      results.innerHTML = "";
+      return;
+    }
+    const matches = searchIndex.filter((item) =>
+      [item.title, item.desc, item.category].join(" ").toLowerCase().includes(q)
+    );
+    if (matches.length === 0) {
+      results.innerHTML = `<li class="search-empty">Không tìm thấy bài viết phù hợp.</li>`;
+      return;
+    }
+    results.innerHTML = matches
+      .map(
+        (item) => `
+        <li><a href="${item.url}">
+          <span class="r-cat">${item.category}</span><br>
+          ${item.title}
+        </a></li>`
+      )
+      .join("");
+  };
+
+  const open = () => {
+    panel.classList.add("is-open");
+    input.value = "";
+    results.innerHTML = "";
+    input.focus();
+    document.addEventListener("keydown", onKeydown);
+  };
+  const close = () => {
+    panel.classList.remove("is-open");
+    document.removeEventListener("keydown", onKeydown);
+    openBtn.focus();
+  };
+  const onKeydown = (e) => {
+    if (e.key === "Escape") close();
+  };
+
+  openBtn.addEventListener("click", open);
+  panel.addEventListener("click", (e) => {
+    if (e.target === panel) close();
+  });
+  panel.querySelector("[data-search-close]")?.addEventListener("click", close);
+  input?.addEventListener("input", (e) => render(e.target.value));
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      open();
+    }
+  });
 }
 
-function init() {
+/* ---------------- Mục lục tự động cho bài viết ---------------- */
+function initTableOfContents() {
+  const body = document.querySelector("[data-post-body]");
+  const tocContainer = document.querySelector("[data-toc-list]");
+  if (!body || !tocContainer) return;
+
+  const headings = Array.from(body.querySelectorAll("h2, h3"));
+  if (headings.length === 0) {
+    document.querySelector("[data-toc]")?.setAttribute("hidden", "");
+    return;
+  }
+
+  const slugCount = {};
+  const items = headings.map((h) => {
+    let slug =
+      h.id ||
+      h.textContent
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    if (slugCount[slug] != null) {
+      slugCount[slug] += 1;
+      slug = `${slug}-${slugCount[slug]}`;
+    } else {
+      slugCount[slug] = 0;
+    }
+    h.id = slug;
+    return { slug, text: h.textContent, level: h.tagName };
+  });
+
+  let html = "<ol>";
+  let openSub = false;
+  items.forEach((item) => {
+    if (item.level === "H3") {
+      if (!openSub) {
+        html += "<ol>";
+        openSub = true;
+      }
+      html += `<li><a href="#${item.slug}">${item.text}</a></li>`;
+    } else {
+      if (openSub) {
+        html += "</ol>";
+        openSub = false;
+      }
+      html += `<li><a href="#${item.slug}">${item.text}</a></li>`;
+    }
+  });
+  if (openSub) html += "</ol>";
+  html += "</ol>";
+  tocContainer.innerHTML = html;
+
+  const tocLinks = tocContainer.querySelectorAll("a");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        tocLinks.forEach((a) => a.classList.remove("is-active"));
+        const link = tocContainer.querySelector(`a[href="#${entry.target.id}"]`);
+        link?.classList.add("is-active");
+      });
+    },
+    { rootMargin: "-20% 0px -70% 0px" }
+  );
+  headings.forEach((h) => observer.observe(h));
+}
+
+/* ---------------- Thời gian đọc ---------------- */
+function initReadingTime() {
+  const body = document.querySelector("[data-post-body]");
+  const out = document.querySelector("[data-reading-time]");
+  if (!body || !out) return;
+  const words = body.textContent.trim().split(/\s+/).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  out.textContent = `${minutes} phút đọc`;
+}
+
+/* ---------------- Sao chép liên kết bài viết ---------------- */
+function initCopyLink() {
+  const btn = document.querySelector("[data-copy-link]");
+  if (!btn) return;
+  const label = btn.querySelector("[data-copy-label]");
+  const defaultText = label ? label.textContent : btn.textContent;
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+    } catch {
+      const t = document.createElement("textarea");
+      t.value = window.location.href;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand("copy");
+      t.remove();
+    }
+    if (label) {
+      label.textContent = "Đã sao chép";
+      setTimeout(() => (label.textContent = defaultText), 1800);
+    }
+  });
+}
+
+/* ---------------- Bộ lọc thư viện ---------------- */
+function initLibraryFilter() {
+  const tabs = document.querySelectorAll("[data-lib-tab]");
+  const items = document.querySelectorAll("[data-lib-item]");
+  if (tabs.length === 0) return;
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const kind = tab.getAttribute("data-lib-tab");
+      tabs.forEach((t) => t.setAttribute("aria-pressed", "false"));
+      tab.setAttribute("aria-pressed", "true");
+      items.forEach((item) => {
+        const show = kind === "all" || item.getAttribute("data-lib-item") === kind;
+        item.hidden = !show;
+      });
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   initTheme();
-  initMobileMenu();
-  initActiveMenu();
+  initMobileNav();
+  highlightActiveMenu();
+  initBackToTop();
   initSearch();
-  initTOC();
+  initTableOfContents();
   initReadingTime();
   initCopyLink();
-  initBackToTop();
-  initLazyImages();
-}
-
-document.addEventListener("DOMContentLoaded", init);
+  initLibraryFilter();
+});

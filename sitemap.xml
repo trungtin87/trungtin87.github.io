@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://buigiatrang.vn/</loc></url>
-  <url><loc>https://buigiatrang.vn/blog/</loc></url>
-  <url><loc>https://buigiatrang.vn/projects/</loc></url>
-  <url><loc>https://buigiatrang.vn/library/</loc></url>
-  <url><loc>https://buigiatrang.vn/about/</loc></url>
-  <url><loc>https://buigiatrang.vn/contact/</loc></url>
-  <url><loc>https://buigiatrang.vn/posts/vo-vi-trong-lap-trinh/</loc></url>
-  <url><loc>https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/</loc></url>
-  <url><loc>https://buigiatrang.vn/posts/thu-phong-so-ghi-chep-tri-thuc/</loc></url>
+  <url><loc>https://trungtin87.github.io/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://trungtin87.github.io/blog/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://trungtin87.github.io/projects/</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://trungtin87.github.io/library/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://trungtin87.github.io/about/</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://trungtin87.github.io/contact/</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://trungtin87.github.io/blog/posts/vo-vi-va-toi-uu.html</loc><lastmod>2026-06-28</lastmod><priority>0.8</priority></url>
+  <url><loc>https://trungtin87.github.io/blog/posts/am-duong-trong-lap-trinh.html</loc><lastmod>2026-06-15</lastmod><priority>0.8</priority></url>
+  <url><loc>https://trungtin87.github.io/blog/posts/dao-phap-tu-nhien.html</loc><lastmod>2026-06-02</lastmod><priority>0.8</priority></url>
 </urlset>
