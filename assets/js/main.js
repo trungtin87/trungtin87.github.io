@@ -29,17 +29,35 @@ function initMobileNav() {
   const nav = document.querySelector("[data-nav]");
   if (!btn || !nav) return;
 
-  btn.addEventListener("click", () => {
+  const closeNav = () => {
+    nav.classList.remove("is-open");
+    btn.setAttribute("aria-expanded", "false");
+  };
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
     const isOpen = nav.classList.toggle("is-open");
     btn.setAttribute("aria-expanded", String(isOpen));
   });
 
   nav.querySelectorAll("a").forEach((a) =>
-    a.addEventListener("click", () => {
-      nav.classList.remove("is-open");
-      btn.setAttribute("aria-expanded", "false");
-    })
+    a.addEventListener("click", closeNav)
   );
+
+  // Bấm ra ngoài menu (nền/overlay) thì đóng lại
+  document.addEventListener("click", (e) => {
+    if (!nav.classList.contains("is-open")) return;
+    if (nav.contains(e.target) || btn.contains(e.target)) return;
+    closeNav();
+  });
+
+  // Nhấn phím Esc để đóng
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && nav.classList.contains("is-open")) {
+      closeNav();
+      btn.focus();
+    }
+  });
 }
 
 /* ---------------- Highlight mục menu hiện tại ---------------- */
