@@ -174,9 +174,19 @@ main { flex: 1; }
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
+  z-index: 50;
+  /* Không đặt backdrop-filter trực tiếp ở đây: nó sẽ biến .site-header
+     thành "containing block" cho các phần tử con position:fixed (như
+     menu di động .nav), khiến menu bị co lại trong khung header thay vì
+     phủ toàn màn hình. Hiệu ứng mờ được tách ra ::before bên dưới. */
+}
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(8px);
-  z-index: 50;
+  z-index: -1;
 }
 .site-header .container {
   display: flex;
