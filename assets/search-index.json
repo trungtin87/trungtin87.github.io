@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Vô vi trong lập trình: viết ít hơn, đúng hơn",
+    "excerpt": "Tư tưởng \"vô vi\" của Đạo giáo — không cưỡng cầu, thuận theo tự nhiên — có thể trở thành một nguyên lý thiết kế phần mềm: giảm trạng thái dư thừa, để hệ thống vận hành theo quy luật của chính nó.",
+    "category": "Triết học & Kỹ thuật",
+    "url": "posts/vo-vi-trong-lap-trinh/"
+  },
+  {
+    "title": "Âm - Dương trong kiến trúc hệ thống",
+    "excerpt": "Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau.",
+    "category": "Kiến trúc phần mềm",
+    "url": "posts/am-duong-trong-kien-truc-he-thong/"
+  },
+  {
+    "title": "Thư phòng số: vì sao tôi tự lưu giữ tri thức của mình",
+    "excerpt": "Một nơi lưu trữ những gì đã học, đã làm, đã sai — không phụ thuộc vào bất kỳ nền tảng nào khác ngoài chính mình.",
+    "category": "Ghi chép",
+    "url": "posts/thu-phong-so-ghi-chep-tri-thuc/"
+  }
+]

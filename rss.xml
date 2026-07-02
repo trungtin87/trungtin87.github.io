@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Bùi Gia Trang</title>
+  <link>https://buigiatrang.vn/</link>
+  <description>Thư phòng số của Bùi Trung Tín — tri thức, kinh nghiệm và dự án mang tinh thần Đạo giáo hiện đại.</description>
+  <language>vi</language>
+  <item>
+    <title>Vô vi trong lập trình: viết ít hơn, đúng hơn</title>
+    <link>https://buigiatrang.vn/posts/vo-vi-trong-lap-trinh/</link>
+    <guid>https://buigiatrang.vn/posts/vo-vi-trong-lap-trinh/</guid>
+    <pubDate>2026-06-18</pubDate>
+    <description>Tư tưởng "vô vi" của Đạo giáo — không cưỡng cầu, thuận theo tự nhiên — có thể trở thành một nguyên lý thiết kế phần mềm: giảm trạng thái dư thừa, để hệ thống vận hành theo quy luật của chính nó.</description>
+  </item>
+  <item>
+    <title>Âm - Dương trong kiến trúc hệ thống</title>
+    <link>https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/</link>
+    <guid>https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/</guid>
+    <pubDate>2026-06-05</pubDate>
+    <description>Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau.</description>
+  </item>
+  <item>
+    <title>Thư phòng số: vì sao tôi tự lưu giữ tri thức của mình</title>
+    <link>https://buigiatrang.vn/posts/thu-phong-so-ghi-chep-tri-thuc/</link>
+    <guid>https://buigiatrang.vn/posts/thu-phong-so-ghi-chep-tri-thuc/</guid>
+    <pubDate>2026-05-20</pubDate>
+    <description>Một nơi lưu trữ những gì đã học, đã làm, đã sai — không phụ thuộc vào bất kỳ nền tảng nào khác ngoài chính mình.</description>
+  </item>
+</channel>
+</rss>

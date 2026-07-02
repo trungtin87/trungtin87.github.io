@@ -1,0 +1,19 @@
+{
+  "name": "Bùi Gia Trang",
+  "short_name": "Bùi Gia Trang",
+  "description": "Thư phòng số của Bùi Trung Tín — tri thức, kinh nghiệm và dự án mang tinh thần Đạo giáo hiện đại.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#111111",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

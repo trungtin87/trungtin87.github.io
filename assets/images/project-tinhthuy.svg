@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+<rect width="960" height="540" fill="#F0F2F2"/>
+<circle cx="480" cy="270" r="90" fill="none" stroke="#222222" stroke-width="2"/>
+<path d="M480 180a90 90 0 0 1 0 180 45 45 0 0 1 0-90 45 45 0 0 0 0-90z" fill="#222222" opacity="0.85"/>
+<circle cx="480" cy="222" r="11" fill="#F0F2F2"/>
+<circle cx="480" cy="318" r="11" fill="#222222"/>
+<text x="480" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#666666">Tĩnh Thủy</text>
+</svg>

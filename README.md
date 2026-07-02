@@ -1,18 +1,80 @@
-# ​✨ Chào Mừng Đến Với Hành Trình của Kẻ Khờ
+# Bùi Gia Trang
 
-​Chào bạn! Tôi là một kẻ mơ mộng, luôn mang trong mình sự tò mò mãnh liệt về thế giới này. Tôi yêu tự do, đắm mình trong thiên nhiên, và tìm thấy niềm đam mê trong công nghệ.
+Website blog tĩnh mang tinh thần Đạo giáo hiện đại — của tác giả **Bùi Trung Tín**.
 
-## ​💖 Mong muốn của tôi là **người Việt có thể học hỏi mọi thứ bằng tiếng Việt**
-​Blog này ra đời không chỉ để thỏa mãn đam mê cá nhân, mà còn để phục vụ một mục mong muốn đóng góp chút sức nhỏ bé qua việc biên dịch, chuyển ngữ các tài liệu quan trọng, giúp ** người Việt có thể học hỏi mọi thứ bằng tiếng Việt ** một cách dễ dàng và hiệu quả nhất. Bởi vì tôi dốt tiếng anh nên tôi luôn tự hỏi "tại sao chúng ta phải học tiếng anh để có thể học mọi thứ ?" 
+Không dùng framework. Không phụ thuộc backend. HTML5 + CSS thuần + JavaScript ES Modules.
 
-## ​📚 Nội Dung Bạn Sẽ Tìm Thấy
-​Nội dung sẽ tập trung vào những chủ đề tôi tin rằng sẽ thúc đẩy sự học hỏi và phát triển, được trình bày theo phong cách đặc trưng:
-​[Tech Insights]: Các bản dịch và tóm tắt súc tích về xu hướng công nghệ mới.
-​[Learning Hub]: Tài liệu hướng dẫn, bài viết chuyển ngữ phục vụ việc tự học.
-​[Tự Do & Thiên Nhiên]: Những cảm xúc, chiêm nghiệm cá nhân về cuộc sống và sự phóng khoáng.
+## Cấu trúc thư mục
 
-## ​🤝 Hãy Cùng Chung Tay
-​Nếu bạn đồng điệu với tầm nhìn này và yêu thích một phong cách giao tiếp thẳng thắn, giàu cảm xúc, tôi rất mong được kết nối với bạn:
-​"Hãy cùng nhau xây dựng cây cầu tri thức bằng tiếng Việt, vì một tương lai vươn xa của Việt Nam."
+```
+/
+├── index.html              # Trang chủ
+├── about/index.html        # Giới thiệu
+├── blog/index.html         # Danh sách bài viết
+├── contact/index.html      # Liên hệ
+├── library/index.html      # Thư viện
+├── projects/index.html     # Dự án
+├── posts/<slug>/index.html # Từng bài viết
+├── assets/
+│   ├── css/                # variables.css, main.css
+│   ├── js/                 # main.js (theme, menu, search, TOC, v.v.)
+│   ├── images/              # Ảnh minh họa SVG
+│   └── search-index.json   # Chỉ mục tìm kiếm phía client
+├── favicon.svg
+├── manifest.webmanifest
+├── robots.txt
+├── sitemap.xml
+├── rss.xml
+└── README.md
+```
 
-​Cảm ơn bạn đã ghé thăm. Hãy lan tỏa tri thức cùng nhau! 🚀
+## Chạy thử cục bộ
+
+Vì đây là website tĩnh thuần túy, chỉ cần một static server bất kỳ:
+
+```bash
+cd /đường-dẫn-đến-thư-mục-này
+python3 -m http.server 8080
+# mở http://localhost:8080
+```
+
+## Triển khai
+
+Tương thích trực tiếp với **GitHub Pages**, **Cloudflare Pages** hoặc **Netlify** — chỉ cần trỏ vào thư mục gốc, không cần bước build.
+
+Trước khi triển khai, cập nhật lại tên miền thật trong:
+- `robots.txt` (dòng `Sitemap:`)
+- `sitemap.xml`, `rss.xml`
+- Thẻ `<link rel="canonical">`, Open Graph, Twitter Card, JSON-LD trong từng trang (biến `BASE_URL` trong `pages.py` nếu build lại bằng script)
+
+## Nội dung mẫu
+
+Ba bài viết, ba dự án và năm mục thư viện trong bản này là **nội dung mẫu** để minh họa bố cục — thay bằng nội dung thật của bạn.
+
+## Thêm bài viết mới
+
+Nếu muốn dùng lại script sinh trang tĩnh nội bộ (`build.py` + `pages.py`, viết bằng Python, chỉ dùng khi phát triển — không thuộc runtime của website):
+1. Thêm mục mới vào danh sách `POSTS` trong `pages.py`.
+2. Thêm nội dung HTML bài viết vào `POST_BODIES`.
+3. Thêm ảnh minh họa SVG/PNG vào `assets/images/`.
+4. Chạy `python3 pages.py` để sinh lại toàn bộ trang tĩnh.
+
+Nếu không dùng script, có thể sao chép thủ công một thư mục trong `posts/` và chỉnh sửa trực tiếp.
+
+## Chức năng đã tích hợp
+
+- Dark / Light mode (Âm / Dương), ghi nhớ lựa chọn qua `localStorage`
+- Responsive, menu di động
+- Tìm kiếm bài viết phía client (`assets/search-index.json`)
+- Mục lục tự động + highlight khi cuộn
+- Đếm thời gian đọc
+- Copy link bài viết
+- Back to top
+- Lazy loading ảnh
+- SEO: meta tags, Open Graph, Twitter Card, canonical, JSON-LD (Schema.org), sitemap.xml, robots.txt, RSS feed
+
+## Triết lý
+
+> "Đạo pháp tự nhiên."
+
+Trang không chỉ để đăng bài — đây là một thư phòng số lưu giữ tri thức, kinh nghiệm và các dự án, cân bằng giữa truyền thống và hiện đại, giữa kỹ thuật và tự nhiên.

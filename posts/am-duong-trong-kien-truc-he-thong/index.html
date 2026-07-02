@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi" data-root="../../">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Âm - Dương trong kiến trúc hệ thống — Bùi Gia Trang</title>
+<meta name="description" content="Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau.">
+<meta name="keywords" content="Kiến trúc phần mềm, Bùi Gia Trang, Bùi Trung Tín">
+<meta name="author" content="Bùi Trung Tín">
+<link rel="canonical" href="https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bùi Gia Trang">
+<meta property="og:title" content="Âm - Dương trong kiến trúc hệ thống — Bùi Gia Trang">
+<meta property="og:description" content="Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau.">
+<meta property="og:url" content="https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/">
+<meta property="og:image" content="https://buigiatrang.vn/assets/images/post-amduong.svg">
+<meta property="og:locale" content="vi_VN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Âm - Dương trong kiến trúc hệ thống — Bùi Gia Trang">
+<meta name="twitter:description" content="Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau.">
+<meta name="twitter:image" content="https://buigiatrang.vn/assets/images/post-amduong.svg">
+
+<link rel="alternate" type="application/rss+xml" title="Bùi Gia Trang RSS" href="../../rss.xml">
+<link rel="stylesheet" href="../../assets/css/main.css">
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem("buigiatrang-theme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+  } catch(e){}
+})();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Âm - Dương trong kiến trúc hệ thống",
+  "datePublished": "2026-06-05",
+  "author": {"@type": "Person", "name": "Bùi Trung Tín"},
+  "publisher": {"@type": "Organization", "name": "Bùi Gia Trang"},
+  "mainEntityOfPage": "https://buigiatrang.vn/posts/am-duong-trong-kien-truc-he-thong/",
+  "image": "https://buigiatrang.vn/assets/images/post-amduong.svg",
+  "description": "Đồng bộ và bất đồng bộ, đọc và ghi, tĩnh và động — mọi hệ thống lớn đều là một cuộc cân bằng giữa hai cực đối lập nhưng bổ sung cho nhau."
+}
+</script>
+</head>
+<body class="">
+<a class="skip-link" href="#noi-dung-chinh">Bỏ qua đến nội dung chính</a>
+<header class="site-header">
+  <div class="container-wide">
+    <a class="brand" href="../../">
+      <span class="taiji-mark" style="width:26px;height:26px;display:inline-flex;"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/>
+<path d="M50 2a48 48 0 0 1 0 96 24 24 0 0 1 0-48 24 24 0 0 0 0-48z" fill="currentColor"/>
+<circle cx="50" cy="26" r="6" fill="var(--bg)"/>
+<circle cx="50" cy="74" r="6" fill="currentColor"/>
+</svg></span>
+      <span>Bùi Gia Trang</span>
+    </a>
+    <nav aria-label="Menu chính">
+      <ul class="nav-menu">
+        <li><a href="../../">Trang chủ</a></li>
+        <li><a href="../../blog/">Blog</a></li>
+        <li><a href="../../projects/">Dự án</a></li>
+        <li><a href="../../library/">Thư viện</a></li>
+        <li><a href="../../about/">Giới thiệu</a></li>
+        <li><a href="../../contact/">Liên hệ</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="search-toggle" aria-expanded="false" aria-label="Tìm kiếm bài viết"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+      <button class="theme-toggle" aria-pressed="false" aria-label="Chuyển chế độ Âm / Dương"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></button>
+      <button class="menu-toggle" aria-expanded="false" aria-label="Mở menu di động"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+</header>
+<div class="search-panel">
+  <div class="container-wide">
+    <label class="visually-hidden" for="search-input">Tìm kiếm bài viết</label>
+    <input type="text" id="search-input" class="search-input" placeholder="Tìm bài viết theo tiêu đề, danh mục…" autocomplete="off">
+    <div class="search-results"></div>
+  </div>
+</div>
+<main id="noi-dung-chinh">
+<div class="container-wide">
+  <div class="article-layout">
+    <nav class="toc" aria-label="Mục lục bài viết">
+      <h2>Mục lục</h2>
+      <ul></ul>
+    </nav>
+    <article class="article-body">
+      <header class="article-header">
+        <div class="post-meta">
+          <span>05/06/2026</span>
+          <span class="tag">Kiến trúc phần mềm</span>
+          <span data-reading-time>… phút đọc</span>
+        </div>
+        <h1>Âm - Dương trong kiến trúc hệ thống</h1>
+        <div class="article-actions">
+          <button class="btn-plain" data-copy-link>Sao chép liên kết</button>
+        </div>
+      </header>
+      <figure>
+        <img src="../../assets/images/post-amduong.svg" alt="Âm - Dương trong kiến trúc hệ thống" width="960" height="540" loading="lazy">
+      </figure>
+      
+<p>Âm và Dương không phải là hai thực thể đối lập tuyệt đối, mà là hai mặt bổ sung của cùng một dòng chảy. Trong kiến trúc phần mềm, nguyên lý này hiện diện ở khắp nơi — nếu ta chịu nhìn kỹ.</p>
+
+<h2 id="dong-bo-bat-dong-bo">Đồng bộ và bất đồng bộ</h2>
+<p>Đồng bộ (Dương — chủ động, tuyến tính) cho ta sự chắc chắn về thứ tự. Bất đồng bộ (Âm — tiếp nhận, phi tuyến) cho ta khả năng mở rộng. Một hệ thống tốt không chọn hẳn một bên, mà biết khi nào cần cái này, khi nào cần cái kia.</p>
+
+<h2 id="doc-ghi">Đọc và ghi</h2>
+<p>Thao tác đọc nên nhẹ nhàng, không tác dụng phụ, có thể lặp lại vô hạn lần — mang tính Âm. Thao tác ghi mang tính quyết đoán, thay đổi trạng thái, cần được kiểm soát chặt chẽ — mang tính Dương. Tách biệt rõ hai luồng này (CQRS là một ví dụ) giúp hệ thống dễ suy luận hơn.</p>
+
+<h3 id="tinh-dong">Tĩnh và động</h3>
+<p>Một trang web tĩnh là Âm: ổn định, có thể dự đoán, ít biến đổi. Một API động là Dương: phản hồi theo ngữ cảnh, luôn thay đổi. Website này tự nó là một minh chứng — phần nội dung tĩnh, nhưng trải nghiệm (dark/light, tìm kiếm) lại động.</p>
+
+<h2 id="ket-luan">Kết luận</h2>
+<p>Thiết kế hệ thống giỏi không phải là chọn phe, mà là hiểu rõ khi nào cần Âm, khi nào cần Dương, và để hai lực đó chuyển hoá lẫn nhau một cách hài hòa.</p>
+
+    </article>
+  </div>
+
+  <section class="related-posts">
+    <h2>Bài liên quan</h2>
+    <div class="post-grid">
+      <div class="post-card">
+  <a class="card-link" href="../../posts/vo-vi-trong-lap-trinh/">
+    <img src="../../assets/images/post-vovi.svg" alt="Vô vi trong lập trình: viết ít hơn, đúng hơn" width="480" height="270" loading="lazy">
+    <div class="post-card-body">
+      <div class="post-meta"><span>18/06/2026</span><span class="tag">Triết học & Kỹ thuật</span></div>
+      <h3>Vô vi trong lập trình: viết ít hơn, đúng hơn</h3>
+      <p>Tư tưởng "vô vi" của Đạo giáo — không cưỡng cầu, thuận theo tự nhiên — có thể trở thành một nguyên lý thiết kế phần mềm: giảm trạng thái dư thừa, để hệ thống vận hành theo quy luật của chính nó.</p>
+    </div>
+  </a>
+</div><div class="post-card">
+  <a class="card-link" href="../../posts/thu-phong-so-ghi-chep-tri-thuc/">
+    <img src="../../assets/images/post-thuphong.svg" alt="Thư phòng số: vì sao tôi tự lưu giữ tri thức của mình" width="480" height="270" loading="lazy">
+    <div class="post-card-body">
+      <div class="post-meta"><span>20/05/2026</span><span class="tag">Ghi chép</span></div>
+      <h3>Thư phòng số: vì sao tôi tự lưu giữ tri thức của mình</h3>
+      <p>Một nơi lưu trữ những gì đã học, đã làm, đã sai — không phụ thuộc vào bất kỳ nền tảng nào khác ngoài chính mình.</p>
+    </div>
+  </a>
+</div>
+    </div>
+  </section>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="container-wide">
+    <div class="taiji-mark" style="width:22px;height:22px;color:var(--muted);"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/>
+<path d="M50 2a48 48 0 0 1 0 96 24 24 0 0 1 0-48 24 24 0 0 0 0-48z" fill="currentColor"/>
+<circle cx="50" cy="26" r="6" fill="var(--bg)"/>
+<circle cx="50" cy="74" r="6" fill="currentColor"/>
+</svg></div>
+    <p>Bùi Trung Tín — © 2024 Bùi Gia Trang. Bảo lưu mọi quyền.</p>
+    <p class="footer-motto">"Đạo pháp tự nhiên."</p>
+  </div>
+</footer>
+<button class="back-to-top" aria-label="Về đầu trang"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<script type="module" src="../../assets/js/main.js"></script>
+</body>
+</html>
