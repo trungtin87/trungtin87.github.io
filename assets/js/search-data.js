@@ -2,6 +2,12 @@
 // Không chỉnh sửa tay tệp này; sửa front matter của bài viết rồi chạy lại generate.py.
 export const searchIndex = [
   {
+    title: "Đạo Đức con đường của sự Sống",
+    url: "/blog/posts/Dao-duc.html",
+    category: "Triết lý nhân sinh",
+    desc: "Đạo là con đường của vạn vật bản thân nó không phân tốt, xấu, đúng, sai. Đạo phân âm dương, Đức và Thất Đức thế nên Đức hướng về sự sống còn Thất đức hướng về sự chết.",
+  },
+  {
     title: "Vô vi trong tối ưu hệ thống",
     url: "/blog/posts/vo-vi-va-toi-uu.html",
     category: "Kỹ thuật",
