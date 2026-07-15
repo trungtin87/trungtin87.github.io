@@ -162,6 +162,34 @@ def _sao_chep_tainguyen(goc, dich):
             _ghi_file(os.path.join(thu_muc_css, "main.css"), "\n\n".join(noi_dung_gop))
 
 
+def _sinh_chi_muc_tim_kiem(tat_ca_bai, thu_muc_output):
+    """Tự sinh tainguyen/js/search-data.js từ danh sách bài viết THẬT mỗi lần
+    build, để URL trong chỉ mục tìm kiếm không bao giờ bị lệch so với URL
+    thật của trang (lỗi thường gặp nếu để file này viết tay/copy thủ công).
+    """
+    import json as _json
+
+    muc = []
+    for bai in tat_ca_bai:
+        muc.append({
+            "title": bai["tieu_de"],
+            "url": bai["url"],
+            "category": bai.get("_fm", {}).get("danh_muc", bai.get("chuyen_muc", "")),
+            "desc": bai.get("mo_ta", ""),
+        })
+    noi_dung = (
+        "// Chỉ mục tìm kiếm — SINH TỰ ĐỘNG bởi vnsite_engine/builder.py "
+        "(_sinh_chi_muc_tim_kiem) mỗi lần build.\n"
+        "// KHÔNG chỉnh tay tệp này — hãy sửa front matter bài viết trong "
+        "_cacbaiviet/ rồi build lại.\n"
+        "export const searchIndex = " + _json.dumps(muc, ensure_ascii=False, indent=2) + ";\n"
+    )
+    duong_dan = os.path.join(thu_muc_output, "tainguyen", "js", "search-data.js")
+    os.makedirs(os.path.dirname(duong_dan), exist_ok=True)
+    with open(duong_dan, "w", encoding="utf-8") as f:
+        f.write(noi_dung)
+
+
 def build(duong_dan_goc: str, che_do_preview: bool = False, im_lang: bool = False):
     """Hàm build chính. Trả về số trang đã sinh ra. Ném LoiVNSITE nếu có lỗi cấu hình/nội dung."""
     def log(msg):
@@ -307,6 +335,7 @@ def build(duong_dan_goc: str, che_do_preview: bool = False, im_lang: bool = Fals
     # ---------- 8. Sao chép tài nguyên tĩnh (css/js/hình ảnh) ----------
     _sao_chep_tainguyen(duong_dan_goc, thu_muc_output)
     _sao_chep_file_tinh_o_goc(duong_dan_goc, thu_muc_output)
+    _sinh_chi_muc_tim_kiem(tat_ca_bai, thu_muc_output)
 
     # ---------- 9. File hỗ trợ GitHub Pages ----------
     _ghi_file(os.path.join(thu_muc_output, ".nojekyll"), "")
