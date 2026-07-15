@@ -15,29 +15,8 @@
       <ul class="social-list">
         <li><a href="mailto:{{ cau_hinh.email }}">Email <span aria-hidden="true">↗</span></a></li>
         <li><a href="{{ cau_hinh.mang_xa_hoi.github }}" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a></li>
-        <li><a href="{{ cau_hinh.mang_xa_hoi.facebook }}" target="_blank" rel="noopener">Facebook <span aria-hidden="true">↗</span></a></li>
-        <li><a href="{{ cau_hinh.mang_xa_hoi.twitter }}" target="_blank" rel="noopener">X (Twitter) <span aria-hidden="true">↗</span></a></li>
-        <li><a href="{{ cau_hinh.mang_xa_hoi.linkedin }}" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a></li>
+
       </ul>
-    </div>
-    <div>
-      <h2>Gửi tin nhắn</h2>
-      <p class="post-desc">Đây là biểu mẫu tĩnh minh họa — trang không có backend, vui lòng dùng email để liên hệ trực tiếp.</p>
-      <form action="mailto:{{ cau_hinh.email }}" method="post" enctype="text/plain">
-        <div class="field">
-          <label for="name">Họ tên</label>
-          <input id="name" name="name" type="text" autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" autocomplete="email">
-        </div>
-        <div class="field">
-          <label for="message">Nội dung</label>
-          <textarea id="message" name="message" rows="5"></textarea>
-        </div>
-        <button class="btn" type="submit">Gửi qua email</button>
-      </form>
     </div>
   </div>
 </section>
