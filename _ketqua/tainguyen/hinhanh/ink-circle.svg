@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Minh họa vòng tròn Thái Cực tối giản">
+<rect width="400" height="300" fill="#ffffff"/>
+<g transform="translate(200,150)">
+<circle r="90" fill="none" stroke="#111111" stroke-width="3"/>
+<path d="M0,-90 A45,45 0 0,1 0,0 A45,45 0 0,0 0,90 A90,90 0 0,1 0,-90 Z" fill="#111111"/>
+<circle cy="-45" r="10" fill="#ffffff"/>
+<circle cy="45" r="10" fill="#111111"/>
+</g>
+</svg>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lưu Thủy — Huyền Không Thư Quán</title>
+<meta name="description" content="Blog cá nhân theo tinh thần Đạo giáo hiện đại: đơn giản, tự nhiên, không dư thừa. Ghi chép kỹ thuật, triết học và các dự án của Bùi Trung Tín.">
+<meta name="keywords" content="Huyền Không Thư Quán, Bùi Gia Trang, Đạo giáo, Vô vi, Âm Dương, Tự nhiên, blog kỹ thuật, thư phòng số, Bùi Trung Tín">
+<meta name="author" content="Bùi Trung Tín">
+<link rel="icon" type="image/svg+xml" href="/tainguyen/hinhanh/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/tainguyen/hinhanh/favicon-32.png">
+<link rel="apple-touch-icon" href="/tainguyen/hinhanh/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+
+<meta property="og:title" content="Lưu Thủy">
+    <meta property="og:description" content="Hàng đợi tác vụ nhẹ, chạy trong tiến trình, thay thế cho các hệ thống hàng đợi nặng nề khi quy mô dự án chưa cần đến chúng.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://trungtin87.github.io/du-an/luu-thuy/">
+    <meta property="og:image" content="https://trungtin87.github.io/tainguyen/hinhanh/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lưu Thủy">
+    <meta name="twitter:description" content="Hàng đợi tác vụ nhẹ, chạy trong tiến trình, thay thế cho các hệ thống hàng đợi nặng nề khi quy mô dự án chưa cần đến chúng.">
+    <meta name="twitter:image" content="https://trungtin87.github.io/tainguyen/hinhanh/og-default.png">
+<meta property="og:site_name" content="Huyền Không Thư Quán">
+<meta property="og:locale" content="vi_VN">
+
+<link rel="alternate" type="application/rss+xml" title="Huyền Không Thư Quán — RSS" href="/rss.xml">
+<link rel="stylesheet" href="/tainguyen/css/main.css">
+<script>
+  (function () {
+    var t = localStorage.getItem("hktq-theme");
+    if (t) document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Huyền Không Thư Quán",
+  "alternateName": "Bùi Gia Trang",
+  "url": "https://trungtin87.github.io/",
+  "author": { "@type": "Person", "name": "Bùi Trung Tín" },
+  "description": "Blog cá nhân theo tinh thần Đạo giáo hiện đại: đơn giản, tự nhiên, không dư thừa. Ghi chép kỹ thuật, triết học và các dự án của Bùi Trung Tín."
+}
+</script>
+</head>
+<body>
+<div class="site">
+  <a class="skip-link" href="#main">Bỏ qua đến nội dung</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <img class="brand-icon" src="/tainguyen/hinhanh/logo.png" alt="" width="40" height="40">
+      <span class="brand-name">Huyền Không Thư Quán</span>
+    </a>
+    <nav class="nav" data-nav aria-label="Menu chính">
+      <ul class="nav-list">
+        
+        <li><a href="/">Trang chủ</a></li>
+        
+        <li><a href="/bai-viet.html">Bài viết</a></li>
+        
+        <li><a href="/du-an.html">Dự án</a></li>
+        
+        <li><a href="/thu-vien.html">Thư viện</a></li>
+        
+        <li><a href="/gioi-thieu.html">Giới thiệu</a></li>
+        
+        <li><a href="/lien-he.html">Liên hệ</a></li>
+        
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" data-search-open type="button" aria-haspopup="dialog" aria-label="Tìm kiếm bài viết">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Chuyển giao diện sáng/tối">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <button class="icon-btn menu-toggle" data-menu-toggle type="button" aria-label="Mở menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+  <!-- Thành phần này gộp 2 thứ phụ trợ điều hướng: bảng tìm kiếm nổi (Ctrl/Cmd+K)
+     và nút "Về đầu trang". Menu chính đã nằm trong phandautrang.html. -->
+<div class="search-panel" data-search-panel role="dialog" aria-modal="true" aria-label="Tìm kiếm">
+  <div class="search-box">
+    <button class="btn" data-search-close type="button" style="float:right">Đóng ✕</button>
+    <label class="sr-only" for="search-input">Tìm kiếm bài viết</label>
+    <input id="search-input" data-search-input type="text" placeholder="Tìm bài viết…" autocomplete="off">
+    <ul class="search-results" data-search-results></ul>
+  </div>
+</div>
+<button class="back-to-top" data-back-to-top type="button" aria-label="Về đầu trang">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
+
+  <main id="main">
+    
+<section class="hero">
+  <div class="container">
+    <h1>Lưu Thủy</h1>
+    <p class="hero-lede">Hàng đợi tác vụ nhẹ, chạy trong tiến trình, thay thế cho các hệ thống hàng đợi nặng nề khi quy mô dự án chưa cần đến chúng.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container prose">
+    
+    <p>Hàng đợi tác vụ nhẹ, chạy trong tiến trình, thay thế cho các hệ thống hàng
+đợi nặng nề khi quy mô dự án chưa cần đến chúng.</p>
+    
+    <span class="the-tag">Go</span>
+    
+    <span class="the-tag">Library</span>
+    
+    <p class="post-toolbar">
+      <a class="btn" href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn" href="" target="_blank" rel="noopener">Xem demo</a>
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="post-grid">
+      
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  <footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-mark">
+      <img class="brand-icon" src="/tainguyen/hinhanh/logo.png" alt="" width="40" height="40">
+      <span>Bùi Trung Tín · © 2026 Huyền Không Thư Quán</span>
+    </div>
+    <p class="footer-tagline">"Đạo pháp tự nhiên."</p>
+    <ul class="footer-links">
+      <li><a href="/rss.xml">RSS</a></li>
+      <li><a href="/sitemap.xml">Sitemap</a></li>
+      <li><a href="/lien-he.html">Liên hệ</a></li>
+    </ul>
+  </div>
+</footer>
+
+</div>
+<script type="module" src="/tainguyen/js/main.js"></script>
+</body>
+</html>

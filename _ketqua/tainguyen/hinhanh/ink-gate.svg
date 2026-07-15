@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Minh họa cổng tối giản">
+<rect width="400" height="300" fill="#ffffff"/>
+<g stroke="#111111" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<line x1="100" y1="60" x2="100" y2="260"/>
+<line x1="300" y1="60" x2="300" y2="260"/>
+<path d="M80 90 L100 60 L120 90"/>
+<path d="M280 90 L300 60 L320 90"/>
+<line x1="70" y1="260" x2="330" y2="260"/>
+<line x1="60" y1="120" x2="340" y2="120"/>
+</g>
+</svg>

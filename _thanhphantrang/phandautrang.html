@@ -1,0 +1,28 @@
+<a class="skip-link" href="#main">Bỏ qua đến nội dung</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="{{ cau_hinh.baseurl }}/">
+      <img class="brand-icon" src="{{ cau_hinh.baseurl }}/tainguyen/hinhanh/logo.png" alt="" width="40" height="40">
+      <span class="brand-name">{{ cau_hinh.ten_trangweb }}</span>
+    </a>
+    <nav class="nav" data-nav aria-label="Menu chính">
+      <ul class="nav-list">
+        {% moi muc trong cau_hinh.dieu_huong %}
+        <li><a href="{{ cau_hinh.baseurl }}{{ muc.duong_dan }}">{{ muc.ten }}</a></li>
+        {% het %}
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" data-search-open type="button" aria-haspopup="dialog" aria-label="Tìm kiếm bài viết">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Chuyển giao diện sáng/tối">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <button class="icon-btn menu-toggle" data-menu-toggle type="button" aria-label="Mở menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
