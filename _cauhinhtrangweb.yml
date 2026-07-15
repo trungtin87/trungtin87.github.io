@@ -3,15 +3,15 @@
 # =========================================================
 
 # --- Thông tin chung ---
-ten_trangweb: "Huyền Không Thư Quán"
-bi_danh: "Bùi Gia Trang"
-khau_hieu: "Đạo pháp tự nhiên."
-mo_ta: "Blog cá nhân theo tinh thần Đạo giáo hiện đại: đơn giản, tự nhiên, không dư thừa. Ghi chép kỹ thuật, triết học và các dự án của Bùi Trung Tín."
+ten_trangweb: "Huyền Không Thư Quán - Bùi Gia Trang"
+bi_danh: ""
+khau_hieu: ""
+mo_ta: "Blog của một phàm nhân theo tinh thần của Đạo: đơn giản, tự nhiên, không dư thừa. Ghi chép về cuộc sống, dự án, dự định của một người bình thường, không phải là một chuyên gia hay nhà nghiên cứu. Chia sẻ những gì mình biết, những gì mình học được, những gì mình trải nghiệm."
 url: "https://trungtin87.github.io"
 baseurl: ""
 ngon_ngu: "vi"
 tac_gia: "Bùi Trung Tín"
-email: "lienhe@example.com"
+email: "trungtincatp@gmail.com"
 mau_giao_dien: "#111111"
 
 # --- Ảnh mặc định cho social/SEO khi bài viết không khai báo riêng ---
@@ -20,9 +20,9 @@ anh_mac_dinh: "/tainguyen/hinhanh/og-default.png"
 # --- Mạng xã hội ---
 mang_xa_hoi:
   github: "https://github.com/trungtin87"
-  facebook: "https://facebook.com/"
-  twitter: "https://x.com/"
-  linkedin: "https://linkedin.com/"
+ # facebook: "https://facebook.com/"
+ # twitter: "https://x.com/"
+ #linkedin: "https://linkedin.com/"
 
 # --- Điều hướng chính (thanhdieuhuong.html, gộp trong phandautrang.html) ---
 dieu_huong:
