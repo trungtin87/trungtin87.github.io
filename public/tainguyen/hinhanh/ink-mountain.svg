@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Minh họa dãy núi mực tối giản">
-<rect width="400" height="300" fill="#ffffff"/>
-<circle cx="330" cy="60" r="26" fill="none" stroke="#111111" stroke-width="2"/>
-<path d="M0 220 L90 120 L150 190 L210 90 L270 200 L330 150 L400 220 L400 300 L0 300 Z" fill="none" stroke="#111111" stroke-width="2.5" stroke-linejoin="round"/>
-<line x1="0" y1="240" x2="400" y2="240" stroke="#111111" stroke-width="1" opacity="0.35"/>
-</svg>
