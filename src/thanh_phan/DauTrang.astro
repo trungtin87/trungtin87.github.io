@@ -1,0 +1,98 @@
+---
+// src/thanh_phan/DauTrang.astro
+// Thanh đầu trang: logo + tên trang, menu điều hướng chính, và 3 nút hành
+// động (tìm kiếm, đổi sáng/tối, mở menu di động). Tương đương
+// _thanhphantrang/phandautrang.html của bản gốc.
+import { cauHinh } from "../cau_hinh/trang_web";
+
+const duongDanHienTai = Astro.url.pathname;
+---
+
+<a class="lien-ket-bo-qua bg-[var(--nhan)] text-[var(--nhan-tuong-phan)] px-4 py-2" href="#noi-dung-chinh">
+  Bỏ qua đến nội dung
+</a>
+
+<header class="header-trang sticky top-0 z-50 border-b" style="border-color:var(--border)">
+  <div class="container mx-auto max-w-6xl px-7 flex items-center justify-between gap-7 py-3.5">
+    <a class="flex items-center gap-2.5 no-underline font-semibold tracking-tight" style="color:var(--text)" href="/">
+      <img class="w-[26px] h-[26px] rounded-full flex-none" src="/tainguyen/hinhanh/logo.png" alt="" width="40" height="40" />
+      <span class="text-[1.05rem] whitespace-nowrap">{cauHinh.ten_trangweb}</span>
+    </a>
+
+    <nav class="menu-di-dong flex items-center gap-12" data-menu aria-label="Menu chính">
+      <ul class="flex gap-7 list-none m-0 p-0">
+        {
+          cauHinh.dieu_huong.map((muc) => {
+            const dangO =
+              muc.duong_dan === "/"
+                ? duongDanHienTai === "/"
+                : duongDanHienTai.startsWith(muc.duong_dan);
+            return (
+              <li>
+                <a
+                  href={muc.duong_dan}
+                  class="text-[0.95rem] no-underline border-b border-transparent py-1"
+                  style={
+                    dangO
+                      ? "color:var(--text);border-color:var(--text)"
+                      : "color:var(--text-mo)"
+                  }
+                  aria-current={dangO ? "page" : undefined}
+                >
+                  {muc.ten}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2.5">
+      <button
+        class="nut-icon w-[38px] h-[38px] rounded-full border inline-flex items-center justify-center cursor-pointer"
+        style="border-color:var(--border);color:var(--text);background:none"
+        data-mo-tim-kiem
+        type="button"
+        aria-haspopup="dialog"
+        aria-label="Tìm kiếm bài viết"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+
+      <button
+        class="nut-icon w-[38px] h-[38px] rounded-full border inline-flex items-center justify-center cursor-pointer"
+        style="border-color:var(--border);color:var(--text);background:none"
+        data-doi-giao-dien
+        type="button"
+        aria-label="Chuyển giao diện sáng/tối"
+      >
+        <svg class="bieu-tuong-mat-troi" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg class="bieu-tuong-mat-trang" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"></path>
+        </svg>
+      </button>
+
+      <button
+        class="nut-icon nut-mo-menu w-[38px] h-[38px] rounded-full border hidden items-center justify-center cursor-pointer"
+        style="border-color:var(--border);color:var(--text);background:none"
+        data-mo-menu
+        type="button"
+        aria-label="Mở menu"
+        aria-expanded="false"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>

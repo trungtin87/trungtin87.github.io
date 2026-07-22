@@ -1,0 +1,88 @@
+---
+// src/pages/index.astro — Trang chủ
+import { getCollection } from "astro:content";
+import BoCucMacDinh from "../bo_cuc/BoCucMacDinh.astro";
+import TheBaiViet from "../thanh_phan/TheBaiViet.astro";
+import TheDuAn from "../thanh_phan/TheDuAn.astro";
+import { cauHinh } from "../cau_hinh/trang_web";
+
+const tatCaBaiViet = (await getCollection("bai_viet", ({ data }) => !data.nhap)).sort(
+  (a, b) => b.data.ngay.valueOf() - a.data.ngay.valueOf()
+);
+const baiVietMoiNhat = tatCaBaiViet.slice(0, 3);
+
+const tatCaDuAn = await getCollection("du_an");
+const duAnMoiNhat = tatCaDuAn.slice(0, 2);
+
+// Gom toàn bộ tag của các bài viết, loại trùng, để làm "đám mây danh mục".
+const tatCaTag = Array.from(new Set(tatCaBaiViet.flatMap((bai) => bai.data.tags))).sort();
+---
+
+<BoCucMacDinh tieuDeTrang={cauHinh.ten_trangweb}>
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7 grid gap-11 items-center grid-cols-1 sm:grid-cols-[auto_1fr]">
+      <img
+        class="w-24 h-24"
+        src="/tainguyen/hinhanh/logo-512.png"
+        alt={`Biểu tượng Lưỡng Nghi (Thái Cực) của ${cauHinh.ten_trangweb}`}
+        width="96"
+        height="96"
+      />
+      <div>
+        <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">
+          Thư phòng số của {cauHinh.tac_gia}
+        </p>
+        <h1>{cauHinh.ten_trangweb}</h1>
+        <p class="text-[1rem] -mt-1.5 mb-3.5" style="color:var(--text-mo)">{cauHinh.bi_danh}</p>
+        <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
+          Một nơi lưu giữ tri thức, kinh nghiệm và các dự án cá nhân — viết theo tinh thần Đạo giáo
+          hiện đại: đơn giản, tự nhiên, không dư thừa. Kỹ thuật được nhìn qua lăng kính của Âm — Dương
+          và Vô vi.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7">
+      <div class="flex items-baseline justify-between gap-7 mb-11">
+        <h2>Bài viết mới</h2>
+        <a class="text-[0.92rem] whitespace-nowrap" href="/bai-viet">Xem tất cả bài viết →</a>
+      </div>
+      <div class="grid gap-11 gap-x-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {baiVietMoiNhat.map((bai) => <TheBaiViet bai={bai} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7">
+      <div class="mb-11"><h2>Danh mục</h2></div>
+      <div class="flex flex-wrap gap-2.5">
+        {
+          tatCaTag.map((tag) => (
+            <a
+              class="border rounded-full px-3.5 py-1.5 no-underline text-[0.9rem]"
+              style="border-color:var(--border);color:var(--text)"
+              href={`/tag/${tag}`}
+            >
+              #{tag}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto max-w-6xl px-7">
+      <div class="flex items-baseline justify-between gap-7 mb-11">
+        <h2>Dự án mới</h2>
+        <a class="text-[0.92rem] whitespace-nowrap" href="/du-an">Xem tất cả dự án →</a>
+      </div>
+      <div class="grid gap-11 grid-cols-1 sm:grid-cols-2">
+        {duAnMoiNhat.map((duAn) => <TheDuAn duAn={duAn} />)}
+      </div>
+    </div>
+  </section>
+</BoCucMacDinh>

@@ -1,0 +1,76 @@
+---
+// src/pages/gioi-thieu.astro
+import BoCucMacDinh from "../bo_cuc/BoCucMacDinh.astro";
+import { cauHinh } from "../cau_hinh/trang_web";
+
+const linhVucNghienCuu = [
+  "Hệ thống phân tán & kiến trúc phần mềm",
+  "Hiệu năng & tối ưu hệ thống",
+  "Triết học Đạo giáo & ứng dụng vào kỹ thuật",
+  "Thiết kế tối giản & trải nghiệm đọc",
+  "Công cụ dòng lệnh & phần mềm mã nguồn mở",
+  "Ngôn ngữ & chữ Quốc ngữ trong xử lý văn bản",
+];
+---
+
+<BoCucMacDinh tieuDeTrang="Giới thiệu">
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7">
+      <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">Giới thiệu</p>
+      <h1>Về {cauHinh.ten_trangweb}</h1>
+      <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
+        Đây là thư phòng số của {cauHinh.tac_gia} — một không gian riêng để ghi lại quá trình học tập,
+        làm việc, và suy nghĩ chậm lại giữa nhịp sống nhanh của ngành công nghệ.
+      </p>
+    </div>
+  </section>
+
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7 grid gap-20 grid-cols-1 sm:grid-cols-[220px_1fr]">
+      <figure class="border rounded-sm overflow-hidden m-0" style="border-color:var(--border)">
+        <img src="/tainguyen/hinhanh/logo-512.png" alt="Biểu tượng Lưỡng Nghi (Thái Cực)" loading="lazy" />
+      </figure>
+      <div class="van-ban-dai">
+        <h2>{cauHinh.tac_gia}</h2>
+        <p>
+          Tôi làm việc trong lĩnh vực phần mềm, quan tâm đến hệ thống phân tán, hiệu năng, và những
+          công cụ đơn giản làm đúng một việc. Bên cạnh công việc kỹ thuật, tôi dành thời gian đọc và
+          suy ngẫm về triết học phương Đông — đặc biệt là tư tưởng Đạo giáo — và cố gắng mang những
+          nguyên lý ấy vào cách tôi thiết kế hệ thống cũng như cách tôi sống.
+        </p>
+        <p>
+          {cauHinh.ten_trangweb} ({cauHinh.bi_danh}) ra đời từ nhu cầu có một nơi chậm rãi hơn mạng xã
+          hội, riêng tư hơn một nền tảng viết chung, và bền hơn một tài khoản có thể biến mất bất cứ
+          lúc nào. Đây là một trang tĩnh, không quảng cáo, không theo dõi người dùng — chỉ có nội
+          dung, và thời gian.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7 van-ban-dai">
+      <h2>Định hướng phát triển</h2>
+      <p>
+        Về lâu dài, {cauHinh.ten_trangweb} sẽ tiếp tục là nơi lưu giữ các bài viết kỹ thuật chuyên
+        sâu, ghi chú đọc sách, và tài liệu cho các dự án mã nguồn mở. Mục tiêu không phải là tăng
+        trưởng lượng truy cập, mà là giữ được chất lượng và sự chân thật của nội dung theo thời gian.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto max-w-6xl px-7">
+      <h2>Lĩnh vực nghiên cứu</h2>
+      <ul class="list-none m-0 p-0 grid gap-3.5 grid-cols-1 sm:grid-cols-2">
+        {
+          linhVucNghienCuu.map((linhVuc) => (
+            <li class="border rounded-sm px-7 py-3.5" style="border-color:var(--border)">
+              {linhVuc}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BoCucMacDinh>

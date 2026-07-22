@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="#ffffff"/>
+<g transform="translate(600,315)">
+<circle r="140" fill="none" stroke="#111111" stroke-width="4"/>
+<path d="M0,-140 A70,70 0 0,1 0,0 A70,70 0 0,0 0,140 A140,140 0 0,1 0,-140 Z" fill="#111111"/>
+<circle cy="-70" r="16" fill="#ffffff"/>
+<circle cy="70" r="16" fill="#111111"/>
+</g>
+<text x="600" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" fill="#111111">Bui Gia Trang</text>
+<text x="600" y="585" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#5a5a5a">Dao phap tu nhien.</text>
+</svg>

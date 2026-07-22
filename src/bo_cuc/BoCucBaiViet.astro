@@ -1,0 +1,92 @@
+---
+// src/bo_cuc/BoCucBaiViet.astro
+// Bố cục dùng riêng cho trang chi tiết 1 bài viết: đầu bài (danh mục, ngày,
+// thời gian đọc, tag, nút sao chép liên kết), nội dung + mục lục bên cạnh,
+// và khối "bài liên quan" ở cuối. Tương đương _bocuctrang/baiviet.html.
+import type { CollectionEntry } from "astro:content";
+import type { MarkdownHeading } from "astro";
+import BoCucMacDinh from "./BoCucMacDinh.astro";
+import MucLuc from "../thanh_phan/MucLuc.astro";
+import TheBaiViet from "../thanh_phan/TheBaiViet.astro";
+
+interface Props {
+  baiViet: CollectionEntry<"bai_viet">;
+  thoiGianDoc: number;
+  danhSachTieuDeMuc: MarkdownHeading[];
+  baiLienQuan: CollectionEntry<"bai_viet">[];
+}
+const { baiViet, thoiGianDoc, danhSachTieuDeMuc, baiLienQuan } = Astro.props;
+const ngayHienThi = new Date(baiViet.data.ngay).toLocaleDateString("vi-VN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BoCucMacDinh tieuDeTrang={baiViet.data.tieu_de} moTaTrang={baiViet.data.mo_ta} anhTrang={baiViet.data.anh_bia}>
+  <header class="py-14 border-b" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7 van-ban-dai">
+      <div class="flex items-center gap-2.5 text-[0.9rem] mb-4" style="color:var(--text-mo)">
+        <span class="border rounded-full px-2.5 py-0.5" style="border-color:var(--border)">{baiViet.data.danh_muc}</span>
+        <span><time datetime={baiViet.data.ngay.toISOString()}>{ngayHienThi}</time></span>
+        <span>· {thoiGianDoc} phút đọc</span>
+      </div>
+      <h1>{baiViet.data.tieu_de}</h1>
+      <div class="flex flex-wrap gap-2 my-3.5">
+        {
+          baiViet.data.tags.map((tag) => (
+            <a
+              class="text-[0.85rem] border rounded-full px-3 py-1.5 no-underline"
+              style="border-color:var(--border);color:var(--text-mo)"
+              href={`/tag/${tag}`}
+            >
+              #{tag}
+            </a>
+          ))
+        }
+      </div>
+      <div class="flex gap-2.5 items-center mt-7">
+        <button
+          class="nut inline-flex items-center gap-1.5 border rounded-sm px-3.5 py-1.5 text-[0.88rem] cursor-pointer"
+          style="border-color:var(--border);color:var(--text);background:none"
+          data-sao-chep-lien-ket
+          type="button"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"></path>
+            <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"></path>
+          </svg>
+          <span data-nhan-sao-chep>Sao chép liên kết</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto max-w-6xl px-7 grid gap-20 py-20 grid-cols-1 md:grid-cols-[1fr_240px]">
+    <article class="van-ban-dai" data-noi-dung-bai-viet>
+      <figure class="my-7 border rounded-sm overflow-hidden" style="border-color:var(--border)">
+        <img src={baiViet.data.anh_bia} alt={baiViet.data.tieu_de} loading="lazy" />
+      </figure>
+      <slot />
+    </article>
+
+    <MucLuc danhSachTieuDeMuc={danhSachTieuDeMuc} />
+  </div>
+
+  {
+    baiLienQuan.length > 0 && (
+      <section class="border-t py-20" style="border-color:var(--border)">
+        <div class="container mx-auto max-w-6xl px-7">
+          <div class="mb-11">
+            <h2>Bài liên quan</h2>
+          </div>
+          <div class="grid gap-11 gap-x-7" style="grid-template-columns:repeat(3,1fr)">
+            {baiLienQuan.map((bai) => (
+              <TheBaiViet bai={bai} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BoCucMacDinh>
