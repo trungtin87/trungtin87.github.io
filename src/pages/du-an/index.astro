@@ -1,0 +1,25 @@
+---
+// src/pages/du-an/index.astro — Danh sách tất cả dự án
+import { getCollection } from "astro:content";
+import BoCucMacDinh from "../../bo_cuc/BoCucMacDinh.astro";
+import TheDuAn from "../../thanh_phan/TheDuAn.astro";
+
+const tatCaDuAn = await getCollection("du_an");
+---
+
+<BoCucMacDinh tieuDeTrang="Dự án">
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7">
+      <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">Dự án</p>
+      <h1>Dự án</h1>
+      <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
+        Những công cụ nhỏ, làm đúng một việc, và làm việc đó tốt.
+      </p>
+    </div>
+  </section>
+  <section class="py-20">
+    <div class="container mx-auto max-w-6xl px-7 grid gap-11 grid-cols-1 sm:grid-cols-2">
+      {tatCaDuAn.map((duAn) => <TheDuAn duAn={duAn} />)}
+    </div>
+  </section>
+</BoCucMacDinh>

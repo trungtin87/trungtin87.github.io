@@ -1,0 +1,55 @@
+# .github/workflows/deploy.yml
+# Tự động dựng (build) trang bằng Astro và đẩy lên GitHub Pages mỗi khi có
+# commit mới vào nhánh main. Sau khi thêm file này vào repo, chỉ cần vào
+# Settings → Pages → Source → chọn "GitHub Actions" (làm 1 lần duy nhất),
+# từ đó về sau chỉ cần "git push" là trang tự cập nhật, không cần build tay.
+
+name: Dựng và triển khai trang lên GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch: # cho phép bấm nút "Run workflow" chạy tay khi cần
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cài gói phụ thuộc
+        run: npm ci
+
+      - name: Dựng trang tĩnh (npm run build)
+        run: npm run build
+
+      - name: Chuẩn bị dữ liệu cho GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Triển khai lên GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,42 @@
+---
+// src/thanh_phan/TheSach.astro
+// Một "thẻ" sách: ảnh bìa, tên sách, tác giả, mô tả ngắn, thể loại,
+// và nút "Chi tiết" dẫn tới trang riêng của sách. Cùng phong cách với
+// TheDuAn.astro để cả trang đồng bộ giao diện.
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  sach: CollectionEntry<"sach">;
+}
+const { sach } = Astro.props;
+---
+
+<div class="border rounded-sm overflow-hidden flex flex-col" style="border-color:var(--border)">
+  <div class="border-b overflow-hidden" style="aspect-ratio:3/4;background:var(--bg-noi);border-color:var(--border)">
+    <img class="w-full h-full object-cover" src={sach.data.anh_bia} alt="" loading="lazy" />
+  </div>
+  <div class="p-7 flex flex-col gap-2.5 flex-1">
+    <h3 class="text-[1.2rem] m-0">{sach.data.tieu_de}</h3>
+    <p class="m-0 text-[0.85rem]" style="color:var(--text-mo)">{sach.data.tac_gia}</p>
+    <p class="m-0 text-[0.95rem]" style="color:var(--text-mo)">{sach.data.mo_ta_ngan}</p>
+    <ul class="flex flex-wrap gap-1.5 list-none m-0 p-0">
+      {
+        sach.data.the_loai.map((tl) => (
+          <li class="text-[0.78rem] border rounded-full px-2.5 py-0.5" style="border-color:var(--border);color:var(--text-mo)">
+            {tl}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="flex items-center justify-between gap-2.5 mt-auto pt-1.5">
+      <span class="text-[0.95rem] font-semibold" style="color:var(--text)">{sach.data.gia || "Miễn phí"}</span>
+      <a
+        class="nut inline-flex items-center gap-1.5 border rounded-sm px-3.5 py-1.5 text-[0.88rem] no-underline"
+        style="border-color:var(--border);color:var(--text)"
+        href={`/sach/${sach.id}`}
+      >
+        Chi tiết
+      </a>
+    </div>
+  </div>
+</div>

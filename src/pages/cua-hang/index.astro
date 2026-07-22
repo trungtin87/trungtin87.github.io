@@ -1,0 +1,30 @@
+---
+// src/pages/cua-hang/index.astro — Danh sách sản phẩm trong Cửa hàng
+import { getCollection } from "astro:content";
+import BoCucMacDinh from "../../bo_cuc/BoCucMacDinh.astro";
+import TheSanPham from "../../thanh_phan/TheSanPham.astro";
+
+const tatCaSanPham = (await getCollection("cua_hang")).sort(
+  (a, b) => Number(b.data.con_hang) - Number(a.data.con_hang)
+);
+---
+
+<BoCucMacDinh
+  tieuDeTrang="Cửa hàng"
+  moTaTrang="Ebook, khoá học nhỏ, và vài vật phẩm — làm ra vì thích làm, không phải để chạy theo doanh số."
+>
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7">
+      <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">Cửa hàng</p>
+      <h1>Cửa hàng</h1>
+      <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
+        Vài thứ nhỏ được làm cẩn thận — ebook, khoá học ngắn, vật phẩm in giới hạn.
+      </p>
+    </div>
+  </section>
+  <section class="py-20">
+    <div class="container mx-auto max-w-6xl px-7 grid gap-11 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {tatCaSanPham.map((sp) => <TheSanPham sanPham={sp} />)}
+    </div>
+  </section>
+</BoCucMacDinh>

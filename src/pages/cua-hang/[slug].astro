@@ -1,0 +1,87 @@
+---
+// src/pages/cua-hang/[slug].astro — Trang chi tiết 1 sản phẩm
+import { getCollection, render } from "astro:content";
+import BoCucMacDinh from "../../bo_cuc/BoCucMacDinh.astro";
+
+export async function getStaticPaths() {
+  const tatCaSanPham = await getCollection("cua_hang");
+  return tatCaSanPham.map((sanPham) => ({
+    params: { slug: sanPham.id },
+    props: { sanPham },
+  }));
+}
+
+const { sanPham } = Astro.props;
+const { Content } = await render(sanPham);
+---
+
+<BoCucMacDinh
+  tieuDeTrang={sanPham.data.ten_san_pham}
+  moTaTrang={sanPham.data.mo_ta_ngan}
+  anhTrang={sanPham.data.anh_san_pham}
+>
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7 grid gap-11 grid-cols-1 sm:grid-cols-[280px_1fr] items-start">
+      <div class="relative border rounded-sm overflow-hidden" style="aspect-ratio:1/1;background:var(--bg-noi);border-color:var(--border)">
+        <img class="w-full h-full object-cover" src={sanPham.data.anh_san_pham} alt="" />
+        {
+          !sanPham.data.con_hang && (
+            <span
+              class="absolute top-2.5 right-2.5 text-[0.75rem] rounded-full px-2.5 py-0.5"
+              style="background:var(--bg);color:var(--text-mo);border:1px solid var(--border)"
+            >
+              Hết hàng
+            </span>
+          )
+        }
+      </div>
+      <div>
+        <h1>{sanPham.data.ten_san_pham}</h1>
+        <p class="text-[1.1rem] max-w-[56ch] mb-3.5" style="color:var(--text-mo)">{sanPham.data.mo_ta_ngan}</p>
+        <ul class="flex flex-wrap gap-1.5 list-none m-0 p-0 mb-5">
+          {
+            sanPham.data.danh_muc.map((dm) => (
+              <li class="text-[0.78rem] border rounded-full px-2.5 py-0.5" style="border-color:var(--border);color:var(--text-mo)">
+                {dm}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="flex items-baseline gap-2.5 mb-5">
+          <span class="text-[1.4rem] font-semibold" style="color:var(--text)">{sanPham.data.gia}</span>
+          {
+            sanPham.data.gia_goc && (
+              <span class="text-[1rem] line-through" style="color:var(--text-mo)">{sanPham.data.gia_goc}</span>
+            )
+          }
+        </div>
+        {
+          sanPham.data.con_hang ? (
+            <a
+              class="nut inline-flex items-center gap-1.5 rounded-sm px-5 py-2.5 text-[0.95rem] no-underline"
+              style={`background:var(--nhan);color:var(--nhan-tuong-phan)`}
+              href={sanPham.data.link_mua || "#"}
+              target="_blank"
+              rel="noopener"
+            >
+              Mua ngay
+            </a>
+          ) : (
+            <span
+              class="nut inline-flex items-center gap-1.5 rounded-sm px-5 py-2.5 text-[0.95rem] border"
+              style="border-color:var(--border);color:var(--text-mo)"
+            >
+              Hiện đã hết hàng
+            </span>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20">
+    <div class="container mx-auto max-w-6xl px-7 van-ban-dai">
+      <Content />
+    </div>
+  </section>
+</BoCucMacDinh>

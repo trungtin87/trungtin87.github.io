@@ -1,0 +1,30 @@
+---
+// src/pages/sach/index.astro — Danh sách tủ sách
+import { getCollection } from "astro:content";
+import BoCucMacDinh from "../../bo_cuc/BoCucMacDinh.astro";
+import TheSach from "../../thanh_phan/TheSach.astro";
+
+const tatCaSach = (await getCollection("sach")).sort(
+  (a, b) => Number(b.data.noi_bat) - Number(a.data.noi_bat)
+);
+---
+
+<BoCucMacDinh
+  tieuDeTrang="Sách"
+  moTaTrang="Tủ sách gợi ý — những cuốn đã đọc, đã ảnh hưởng đến cách nghĩ và cách viết trên trang này."
+>
+  <section class="border-b py-20" style="border-color:var(--border)">
+    <div class="container mx-auto max-w-6xl px-7">
+      <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">Tủ sách</p>
+      <h1>Sách</h1>
+      <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
+        Không phải danh sách "phải đọc" — chỉ là những cuốn đã đọc và thấy đáng để giữ lại, chia sẻ.
+      </p>
+    </div>
+  </section>
+  <section class="py-20">
+    <div class="container mx-auto max-w-6xl px-7 grid gap-11 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {tatCaSach.map((sach) => <TheSach sach={sach} />)}
+    </div>
+  </section>
+</BoCucMacDinh>
