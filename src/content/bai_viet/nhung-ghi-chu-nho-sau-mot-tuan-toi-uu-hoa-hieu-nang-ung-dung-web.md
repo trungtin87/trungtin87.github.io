@@ -9,7 +9,7 @@ tags:
   - web
 mo_ta: Ghi lại ba bài học thực tế về độ trễ phản hồi, bộ nhớ đệm trình duyệt và cách giữ cho mã nguồn luôn dễ đọc sau sáu tháng.
 ngay: '2026-11-15'
-anh_bia: /src/assets/images/cover_evening_notes_1794757148357.jpg
+anh_bia: /tainguyen/hinhanh/uploads/20261115-fb907ce4311268eefb9f6b10b86febb4-fcee5c.jpg
 nhap: false
 ---
 
@@ -20,6 +20,8 @@ nhap: false
 ### 1. Đo lường trước khi tối ưu
 
 Trước khi sửa bất kỳ dòng mã nào, hãy ghi lại thời gian tải thực tế và kích thước gói bundle. Cảm tính thường dẫn ta đi tối ưu sai chỗ.
+
+![512cf75fbc0098f80bedac3db56af816](/tainguyen/hinhanh/uploads/20261115-512cf75fbc0098f80bedac3db56af816-376492.jpg)
 
 ### 2. Tôn trọng trạng thái trống và lỗi mạng
 
