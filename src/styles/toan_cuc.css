@@ -40,28 +40,28 @@
   --chuyen-doi: 180ms ease;
 
   /* ---- Sáng (Dương) ---- */
-  --bg: #ffffff;
-  --bg-noi: #fafafa; /* nền "nổi" lên một chút, ví dụ khối code */
-  --text: #222222;
-  --text-mo: #5a5a5a;
-  --border: #dddddd;
-  --link: #2f4f6b;
+  --bg: #0b0c0e;
+  --bg-noi: #14161a; /* nền "nổi" lên một chút, ví dụ khối code */
+  --text: #f4f4f5;
+  --text-mo: #9ca3af;
+  --border: #272a30;
+  --link: #f59e0b;
   --link-hover: #1c3247;
-  --nhan: #111111; /* accent */
-  --nhan-tuong-phan: #ffffff;
+  --nhan: #f59e0b; /* accent */
+  --nhan-tuong-phan: #0b0c0e;
 }
 
 [data-theme="dark"] {
   /* ---- Tối (Âm) ---- */
-  --bg: #111111;
-  --bg-noi: #171717;
-  --text: #eeeeee;
-  --text-mo: #a3a3a3;
-  --border: #333333;
-  --link: #8fd9c4;
+  --bg: #0b0c0e;
+  --bg-noi: #14161a;
+  --text: #f4f4f5;
+  --text-mo: #9ca3af;
+  --border: #272a30;
+  --link: #f59e0b;
   --link-hover: #b3ebda;
-  --nhan: #eeeeee;
-  --nhan-tuong-phan: #111111;
+  --nhan: #f59e0b;
+  --nhan-tuong-phan: #0b0c0e;
 }
 
 @media (prefers-color-scheme: dark) {
