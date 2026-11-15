@@ -1,0 +1,12 @@
+{
+  "siteTitle": "Huyền Không Thư Quán",
+  "tagline": "Blog cá nhân theo tinh thần Đạo giáo hiện đại: đơn giản, tự nhiên, không dư thừa. Ghi chép kỹ thuật, triết học và các dự án của Bùi Trung Tín.",
+  "authorName": "Bùi Trung Tín",
+  "authorBio": "Kỹ sư phần mềm · Thiết kế hệ thống & Viết lách trên GitHub Pages",
+  "authorAvatar": "https://avatars.githubusercontent.com/u/23460916?v=4",
+  "githubOwner": "trungtin87",
+  "githubRepo": "trungtin87.github.io",
+  "pagesUrl": "https://trungtin87.github.io",
+  "themeId": "obsidian-monograph",
+  "postsDirectory": "src/content/bai_viet"
+}
