@@ -2,10 +2,11 @@
   {
     "id": "publish-4f20eb16",
     "type": "publish",
-    "status": "pending",
+    "status": "completed",
     "filePath": "src/content/bai_viet/ghi-chep-ve-kien-truc-ung-dung-web-ben-vung.md",
     "title": "Ghi chép về kiến trúc ứng dụng web bền vững",
     "scheduledAt": "2026-11-16T09:37:00.000Z",
-    "rawContent": "---\ntieu_de: Ghi chép về kiến trúc ứng dụng web bền vững\ndanh_muc: Kỹ thuật\nchuyen_muc: ky-thuat\nslug: ghi-chep-ve-kien-truc-ung-dung-web-ben-vung\ntags:\n  - kien-truc\n  - web\n  - markdown\nmo_ta: Tổng hợp nguyên tắc thiết kế hệ thống nhẹ, dễ bảo trì và triển khai trực tiếp trên GitHub Pages.\nngay: '2026-11-16'\nanh_bia: /tainguyen/hinhanh/uploads/20261116-3acfc6ffe083df8954c06f5cb441fb23-77375a.webp\nnhap: false\n---\n\n## Bối cảnh\n\nKhi xây dựng một góc viết cá nhân hoặc tài liệu kỹ thuật dài hạn, sự đơn giản trong định dạng lưu trữ (Markdown thuần túy + Git) mang lại tuổi thọ vượt trội.\n\n## Ba nguyên tắc cốt lõi\n\n1. **Nội dung tách rời khỏi giao diện**: Toàn bộ bài viết nằm trong các tệp `.md` có cấu trúc rõ ràng.\n2. **Tối ưu tốc độ tải trang**: Ảnh được nén về chuẩn WebP/JPEG nhẹ trước khi đưa lên kho lưu trữ.\n3. **Chủ quyền dữ liệu**: Mọi dòng chữ đều nằm trong Git repository của chính bạn.\n\n> Sự rõ ràng trong tư duy luôn bắt đầu từ những công cụ không gây xao nhãng.\n"
+    "rawContent": "---\ntieu_de: Ghi chép về kiến trúc ứng dụng web bền vững\ndanh_muc: Kỹ thuật\nchuyen_muc: ky-thuat\nslug: ghi-chep-ve-kien-truc-ung-dung-web-ben-vung\ntags:\n  - kien-truc\n  - web\n  - markdown\nmo_ta: Tổng hợp nguyên tắc thiết kế hệ thống nhẹ, dễ bảo trì và triển khai trực tiếp trên GitHub Pages.\nngay: '2026-11-16'\nanh_bia: /tainguyen/hinhanh/uploads/20261116-3acfc6ffe083df8954c06f5cb441fb23-77375a.webp\nnhap: false\n---\n\n## Bối cảnh\n\nKhi xây dựng một góc viết cá nhân hoặc tài liệu kỹ thuật dài hạn, sự đơn giản trong định dạng lưu trữ (Markdown thuần túy + Git) mang lại tuổi thọ vượt trội.\n\n## Ba nguyên tắc cốt lõi\n\n1. **Nội dung tách rời khỏi giao diện**: Toàn bộ bài viết nằm trong các tệp `.md` có cấu trúc rõ ràng.\n2. **Tối ưu tốc độ tải trang**: Ảnh được nén về chuẩn WebP/JPEG nhẹ trước khi đưa lên kho lưu trữ.\n3. **Chủ quyền dữ liệu**: Mọi dòng chữ đều nằm trong Git repository của chính bạn.\n\n> Sự rõ ràng trong tư duy luôn bắt đầu từ những công cụ không gây xao nhãng.\n",
+    "executedAt": "2026-11-16T13:14:49.658Z"
   }
 ]
