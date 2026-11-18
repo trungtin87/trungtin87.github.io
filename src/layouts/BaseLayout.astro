@@ -1,0 +1,884 @@
+---
+import { SITE_CONFIG } from '../cau_hinh/trang_web';
+import { withBase } from '../utils/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  canonical?: string;
+  jsonLd?: Record<string, any>;
+}
+
+const {
+  title = SITE_CONFIG.siteTitle,
+  description = SITE_CONFIG.tagline,
+  ogImage = '/tainguyen/hinhanh/og-default.svg',
+  noindex = false,
+  canonical,
+  jsonLd,
+} = Astro.props;
+
+const fullTitle =
+  title === SITE_CONFIG.siteTitle ? title : `${title} | ${SITE_CONFIG.siteTitle}`;
+const iconHref = withBase(SITE_CONFIG.siteIcon || '/favicon.svg');
+const ogImgHref = withBase(ogImage);
+const initialMode = SITE_CONFIG.themeMode === 'dark' ? 'dark' : 'light';
+const initialDark = initialMode === 'dark';
+const currentPath = Astro.url.pathname;
+const liveChat = SITE_CONFIG.liveChat;
+const activeChatChannels = (liveChat?.channels || []).filter(
+  (ch) => ch.enabled && ch.value && ch.value.trim().length > 0
+);
+const directChatChannels = activeChatChannels.filter(
+  (ch) => ch.id !== 'tawkto' && ch.id !== 'crisp'
+);
+const tawkChannel = activeChatChannels.find((ch) => ch.id === 'tawkto');
+const crispChannel = activeChatChannels.find((ch) => ch.id === 'crisp');
+const tawkWidgetId = tawkChannel?.value
+  ? tawkChannel.value
+      .trim()
+      .replace(/^https?:\/\/embed\.tawk\.to\//i, '')
+      .replace(/^\/+/, '')
+  : '';
+
+function resolveChatHref(id: string, rawValue: string): string {
+  const val = rawValue.trim();
+  if (/^(https?:|mailto:|tel:)/i.test(val)) return val;
+  if (id === 'zalo') return `https://zalo.me/${encodeURIComponent(val.replace(/^@/, ''))}`;
+  if (id === 'messenger') return `https://m.me/${encodeURIComponent(val.replace(/^@/, ''))}`;
+  if (id === 'telegram') return `https://t.me/${encodeURIComponent(val.replace(/^@/, ''))}`;
+  if (id === 'whatsapp') {
+    const digits = val.replace(/[^0-9]/g, '');
+    const normalized = /^0\d{8,10}$/.test(digits) ? `84${digits.slice(1)}` : digits;
+    return `https://wa.me/${normalized}`;
+  }
+  if (id === 'email') return `mailto:${val}`;
+  return val;
+}
+
+const mainNav = [
+  { label: 'Trang nhất', href: withBase('/') },
+  { label: 'Kho bài viết', href: withBase('/bai-viet/') },
+];
+---
+
+<!doctype html>
+<html lang="vi" data-mode={initialMode} class={initialDark ? 'dark' : ''}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <script is:inline define:vars={{ defaultMode: initialMode }}>
+      (function () {
+        try {
+          var saved = localStorage.getItem('daoky_theme_mode');
+          var mode = saved === 'dark' || saved === 'light' ? saved : defaultMode;
+          document.documentElement.setAttribute('data-mode', mode);
+          document.documentElement.classList.toggle('dark', mode === 'dark');
+        } catch (e) {}
+      })();
+    </script>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImgHref} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="icon" href={iconHref} />
+    <link rel="apple-touch-icon" href={iconHref} />
+    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href={withBase('/sitemap.xml')} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE_CONFIG.siteTitle} RSS`} href={withBase('/rss.xml')} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body data-template={SITE_CONFIG.templateStyle}>
+    <header class="site-header">
+      <div class="wrap nav-inner">
+        <a class="brand" href={withBase('/')}>
+          <img src={iconHref} alt={SITE_CONFIG.headerTitle} width="30" height="30" />
+          <span>{SITE_CONFIG.headerTitle}</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Điều hướng chính">
+          {mainNav.map((item) => (
+            <a
+              href={item.href}
+              class={currentPath === item.href ? 'active' : ''}
+            >
+              {item.label}
+            </a>
+          ))}
+          {SITE_CONFIG.headerNavLinks.map((link) => (
+            <a
+              href={withBase(link.url)}
+              target={link.url.startsWith('http') ? '_blank' : undefined}
+              rel={link.url.startsWith('http') ? 'noreferrer' : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        <div class="nav-actions">
+          <button
+            id="themeToggleBtn"
+            class="icon-btn theme-toggle-btn"
+            type="button"
+            aria-label="Chuyển chế độ Sáng / Tối"
+            title="Chuyển chế độ Sáng / Tối"
+          >
+            <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+            </svg>
+          </button>
+          <a class="icon-btn" href={withBase('/rss.xml')} title="RSS Feed" aria-label="RSS Feed">
+            RSS
+          </a>
+          <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Mở menu">
+            ☰
+          </button>
+        </div>
+      </div>
+
+      <div id="mobileDrawer" class="mobile-drawer hidden">
+        <div class="wrap mobile-drawer-links">
+          {mainNav.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))}
+          {SITE_CONFIG.headerNavLinks.map((link) => (
+            <a href={withBase(link.url)}>{link.label}</a>
+          ))}
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap main-content">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div>
+          <p class="footer-copy">{SITE_CONFIG.footerText}</p>
+          <p class="footer-sub">Tác giả: {SITE_CONFIG.authorName}</p>
+        </div>
+        <div class="footer-links">
+          <a href={withBase('/bai-viet/')}>Kho bài viết</a>
+          <a href={withBase('/rss.xml')}>RSS</a>
+          {SITE_CONFIG.footerLinks.map((link) => (
+            <a
+              href={withBase(link.url)}
+              target={link.url.startsWith('http') ? '_blank' : undefined}
+              rel={link.url.startsWith('http') ? 'noreferrer' : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </footer>
+
+    {liveChat?.enabled && directChatChannels.length > 0 && (
+      <div id="daokyLiveChat" class="livechat-dock">
+        <div id="livechatPanel" class="livechat-panel hidden" role="dialog" aria-label={liveChat.title || 'Live Chat'}>
+          <div class="livechat-head">
+            <div>
+              <strong>{liveChat.title || 'Trò chuyện với tác giả'}</strong>
+              {liveChat.welcomeText && <p>{liveChat.welcomeText}</p>}
+            </div>
+            <button id="livechatCloseBtn" type="button" aria-label="Đóng hộp chat">✕</button>
+          </div>
+          <div class="livechat-list">
+            {directChatChannels.map((ch) => (
+              <a
+                class="livechat-item"
+                href={resolveChatHref(ch.id, ch.value)}
+                target={ch.id === 'email' ? undefined : '_blank'}
+                rel={ch.id === 'email' ? undefined : 'noreferrer'}
+              >
+                <span class="livechat-ch-name">{ch.label || ch.id.toUpperCase()}</span>
+                <span class="livechat-ch-arrow">Nhắn ngay →</span>
+              </a>
+            ))}
+          </div>
+        </div>
+        <button id="livechatToggleBtn" class="livechat-fab" type="button" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span>Chat</span>
+        </button>
+      </div>
+    )}
+
+    {liveChat?.enabled && tawkWidgetId && (
+      <script is:inline define:vars={{ tawkId: tawkWidgetId }}>
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+          var s1 = document.createElement('script'),
+            s0 = document.getElementsByTagName('script')[0];
+          s1.async = true;
+          s1.src = 'https://embed.tawk.to/' + tawkId;
+          s1.charset = 'UTF-8';
+          s1.setAttribute('crossorigin', '*');
+          s0.parentNode.insertBefore(s1, s0);
+        })();
+      </script>
+    )}
+
+    {liveChat?.enabled && crispChannel?.value && (
+      <script is:inline define:vars={{ crispId: crispChannel.value }}>
+        window.$crisp = [];
+        window.CRISP_WEBSITE_ID = crispId;
+        (function () {
+          var d = document;
+          var s = d.createElement('script');
+          s.src = 'https://client.crisp.chat/l.js';
+          s.async = true;
+          d.getElementsByTagName('head')[0].appendChild(s);
+        })();
+      </script>
+    )}
+
+    <script is:inline>
+      const themeBtn = document.getElementById('themeToggleBtn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+          const next = cur === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-mode', next);
+          document.documentElement.classList.toggle('dark', next === 'dark');
+          try {
+            localStorage.setItem('daoky_theme_mode', next);
+          } catch (e) {}
+        });
+      }
+      const mBtn = document.getElementById('mobileMenuBtn');
+      const mDrawer = document.getElementById('mobileDrawer');
+      if (mBtn && mDrawer) {
+        mBtn.addEventListener('click', () => {
+          mDrawer.classList.toggle('hidden');
+        });
+      }
+      const chatToggle = document.getElementById('livechatToggleBtn');
+      const chatPanel = document.getElementById('livechatPanel');
+      const chatClose = document.getElementById('livechatCloseBtn');
+      if (chatToggle && chatPanel) {
+        chatToggle.addEventListener('click', () => {
+          const isHidden = chatPanel.classList.toggle('hidden');
+          chatToggle.setAttribute('aria-expanded', String(!isHidden));
+        });
+        if (chatClose) {
+          chatClose.addEventListener('click', () => {
+            chatPanel.classList.add('hidden');
+            chatToggle.setAttribute('aria-expanded', 'false');
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #161210;
+    --surface: #201A17;
+    --card: #29221E;
+    --border: #3B312B;
+    --text: #F5EFE6;
+    --text-2: #D6CBC0;
+    --muted: #A39589;
+    --accent: #E5A93C;
+    --accent-text: #161210;
+    --link: #FBBF24;
+    --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  html[data-mode='light'] body[data-template='newyorker-light'] {
+    --bg: #FAF7F2;
+    --surface: #F2EDE4;
+    --card: #FFFFFF;
+    --border: #DDD5C7;
+    --text: #141414;
+    --text-2: #3A352E;
+    --muted: #6E665A;
+    --accent: #141414;
+    --accent-text: #FAF7F2;
+    --link: #B91C1C;
+    --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  html[data-mode='dark'] body[data-template='newyorker-light'] {
+    --bg: #161411;
+    --surface: #201D18;
+    --card: #28241E;
+    --border: #3A332A;
+    --text: #F5EFE6;
+    --text-2: #D8CFC2;
+    --muted: #A19585;
+    --accent: #FAF7F2;
+    --accent-text: #161411;
+    --link: #F87171;
+    --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  html[data-mode='light'] body[data-template='nytimes-light'] {
+    --bg: #FFFFFF;
+    --surface: #F5F6F8;
+    --card: #FFFFFF;
+    --border: #D4D4D8;
+    --text: #0F172A;
+    --text-2: #334155;
+    --muted: #64748B;
+    --accent: #0F172A;
+    --accent-text: #FFFFFF;
+    --link: #1E3A8A;
+    --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='dark'] body[data-template='nytimes-light'] {
+    --bg: #0E1218;
+    --surface: #161C26;
+    --card: #1D2432;
+    --border: #2C3548;
+    --text: #F8FAFC;
+    --text-2: #CBD5E1;
+    --muted: #94A3B8;
+    --accent: #F8FAFC;
+    --accent-text: #0E1218;
+    --link: #60A5FA;
+    --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='light'] body[data-template='bbc-dark'] {
+    --bg: #F6F7F9;
+    --surface: #EBEDF2;
+    --card: #FFFFFF;
+    --border: #D4D7DF;
+    --text: #111216;
+    --text-2: #374151;
+    --muted: #6B7280;
+    --accent: #E11D48;
+    --accent-text: #FFFFFF;
+    --link: #BE123C;
+    --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='dark'] body[data-template='bbc-dark'] {
+    --bg: #121214;
+    --surface: #1A1B1F;
+    --card: #22242A;
+    --border: #2E313A;
+    --text: #F4F4F5;
+    --text-2: #D4D4D8;
+    --muted: #A1A1AA;
+    --accent: #E11D48;
+    --accent-text: #FFFFFF;
+    --link: #FB7185;
+    --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='light'] body[data-template='obsidian-broadsheet'] {
+    --bg: #F3F6FB;
+    --surface: #E6ECF5;
+    --card: #FFFFFF;
+    --border: #CBD5E1;
+    --text: #0F172A;
+    --text-2: #334155;
+    --muted: #64748B;
+    --accent: #0F172A;
+    --accent-text: #FFFFFF;
+    --link: #1D4ED8;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='dark'] body[data-template='obsidian-broadsheet'] {
+    --bg: #0B0D12;
+    --surface: #131722;
+    --card: #1A1F2E;
+    --border: #273043;
+    --text: #F3F4F6;
+    --text-2: #CBD5E1;
+    --muted: #94A3B8;
+    --accent: #F3F4F6;
+    --accent-text: #0B0D12;
+    --link: #60A5FA;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='light'] body[data-template='espresso-salon'] {
+    --bg: #FAF4EC;
+    --surface: #F1E7DA;
+    --card: #FFFFFF;
+    --border: #DECDB9;
+    --text: #261C15;
+    --text-2: #4E3E31;
+    --muted: #7D6A5A;
+    --accent: #9A5B13;
+    --accent-text: #FFFFFF;
+    --link: #B45309;
+    --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  html[data-mode='dark'] body[data-template='espresso-salon'] {
+    --bg: #161210;
+    --surface: #201A17;
+    --card: #29221E;
+    --border: #3B312B;
+    --text: #F5EFE6;
+    --text-2: #D6CBC0;
+    --muted: #A39589;
+    --accent: #E5A93C;
+    --accent-text: #161210;
+    --link: #FBBF24;
+    --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.72;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  @media (max-width: 639px) {
+    .wrap {
+      padding: 0 16px;
+    }
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  body[data-template='newyorker-light'] .site-header {
+    border-bottom: 3px double var(--border);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 60px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    text-decoration: none !important;
+  }
+
+  .brand img {
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .brand span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: 22px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .nav-links a {
+    color: var(--text-2);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .icon-btn,
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none !important;
+  }
+
+  .theme-toggle-btn {
+    min-width: 38px;
+    padding: 0;
+  }
+
+  .theme-toggle-btn .sun-icon {
+    display: none;
+    color: #f59e0b;
+  }
+
+  .theme-toggle-btn .moon-icon {
+    display: block;
+    color: var(--link);
+  }
+
+  html[data-mode='dark'] .theme-toggle-btn .sun-icon {
+    display: block;
+  }
+
+  html[data-mode='dark'] .theme-toggle-btn .moon-icon {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    min-width: 38px;
+    padding: 0 10px;
+    font-size: 1rem;
+  }
+
+  .mobile-drawer {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    padding: 12px 0 16px;
+  }
+
+  .mobile-drawer.hidden {
+    display: none;
+  }
+
+  .mobile-drawer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mobile-drawer-links a {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 6px 0;
+  }
+
+  @media (min-width: 820px) {
+    .nav-links {
+      display: flex;
+    }
+    .mobile-menu-btn,
+    .mobile-drawer {
+      display: none !important;
+    }
+  }
+
+  .main-content {
+    min-height: calc(100vh - 200px);
+    padding-top: 28px;
+    padding-bottom: 64px;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 28px 0;
+  }
+
+  body[data-template='newyorker-light'] .site-footer {
+    border-top: 3px double var(--border);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .footer-copy {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-2);
+  }
+
+  .footer-sub {
+    margin: 4px 0 0;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-size: 0.84rem;
+  }
+
+  .prose {
+    font-size: 1.08rem;
+    line-height: 1.82;
+    color: var(--text-2);
+    max-width: 68ch;
+  }
+
+  body[data-template='newyorker-light'] .prose > p:first-of-type::first-letter,
+  body[data-template='espresso-salon'] .prose > p:first-of-type::first-letter {
+    float: left;
+    font-family: var(--font-display);
+    font-size: 3.4rem;
+    line-height: 0.85;
+    font-weight: 700;
+    color: var(--text);
+    padding-right: 10px;
+    padding-top: 4px;
+  }
+
+  .prose h2,
+  .prose h3 {
+    font-family: var(--font-display);
+    color: var(--text);
+    margin-top: 2.1rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .prose p {
+    margin: 1.15rem 0;
+  }
+
+  .prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 1.6rem 0;
+    border: 1px solid var(--border);
+  }
+
+  .prose blockquote {
+    margin: 1.8rem 0;
+    padding: 1.1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--text);
+  }
+
+  .prose pre {
+    padding: 1rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+  }
+
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--surface);
+    padding: 0.15em 0.4em;
+    border-radius: 5px;
+  }
+
+  .prose pre code {
+    background: transparent;
+    padding: 0;
+  }
+
+  .livechat-dock {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+
+  .livechat-fab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--accent);
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .livechat-panel {
+    width: min(320px, calc(100vw - 36px));
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+
+  .livechat-panel.hidden {
+    display: none;
+  }
+
+  .livechat-head {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .livechat-head strong {
+    display: block;
+    font-size: 0.92rem;
+    font-family: var(--font-display);
+  }
+
+  .livechat-head p {
+    margin: 4px 0 0;
+    font-size: 0.78rem;
+    color: var(--text-2);
+    line-height: 1.45;
+  }
+
+  .livechat-head button {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 2px 6px;
+  }
+
+  .livechat-list {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .livechat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none !important;
+  }
+
+  .livechat-item:hover {
+    border-color: var(--link);
+  }
+
+  .livechat-ch-arrow {
+    font-size: 0.76rem;
+    color: var(--link);
+    font-family: var(--font-mono);
+  }
+</style>

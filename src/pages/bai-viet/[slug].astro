@@ -1,39 +1,258 @@
 ---
-// src/pages/bai-viet/[slug].astro — Trang chi tiết 1 bài viết
-// [slug] trong tên file nghĩa là Astro sẽ sinh ra một trang riêng cho MỖI
-// bài viết, với đường dẫn /bai-viet/ten-file-markdown.
-import { getCollection, render } from "astro:content";
-import BoCucBaiViet from "../../bo_cuc/BoCucBaiViet.astro";
-import { cauHinh } from "../../cau_hinh/trang_web";
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_CONFIG } from '../../cau_hinh/trang_web';
+import {
+  estimateReadingTime,
+  formatVietnameseDate,
+  getPostCover,
+  getPostDate,
+  getPostExcerpt,
+  getPostSlug,
+  getPostTitle,
+  withBase,
+} from '../../utils/url';
 
 export async function getStaticPaths() {
-  const tatCaBaiViet = await getCollection("bai_viet", ({ data }) => !data.nhap);
-  return tatCaBaiViet.map((bai) => ({
-    params: { slug: bai.id },
-    props: { bai },
+  const entries = (await getCollection('bai_viet'))
+    .filter((e) => !e.data.nhap && !e.data.draft)
+    .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+  return entries.map((entry) => ({
+    params: { slug: getPostSlug(entry) },
+    props: { entry, allEntries: entries },
   }));
 }
 
-const { bai } = Astro.props;
-const { Content, headings } = await render(bai);
+const { entry, allEntries = [] } = Astro.props;
+const { Content } = await render(entry);
+const title = getPostTitle(entry);
+const date = getPostDate(entry);
+const excerpt = getPostExcerpt(entry);
+const cover = getPostCover(entry);
+const category = String(entry.data?.danh_muc || entry.data?.category || 'Bài viết');
+const tags: string[] = Array.isArray(entry.data?.tags) ? entry.data.tags : [];
+const minutes = estimateReadingTime(entry.body || '');
+const resolvedAuthor = String(entry.data?.tac_gia || entry.data?.author || SITE_CONFIG.authorName);
+const pageSlug = getPostSlug(entry);
+const canonicalTarget =
+  entry.data?.canonical_url ||
+  `${SITE_CONFIG.pagesUrl.replace(/\/+$/, '')}${withBase(`/bai-viet/${pageSlug}/`)}`;
 
-// Tính thời gian đọc: đếm số từ trong nội dung gốc rồi chia cho tốc độ đọc
-// trung bình đã cấu hình (so_tu_moi_phut_doc).
-const soTu = bai.body?.trim().split(/\s+/).length ?? 0;
-const thoiGianDoc = Math.max(1, Math.round(soTu / cauHinh.so_tu_moi_phut_doc));
-
-// Bài liên quan: cùng danh mục hoặc có chung ít nhất 1 tag, tối đa 3 bài.
-const tatCaBaiViet = await getCollection("bai_viet", ({ data }) => !data.nhap);
-const baiLienQuan = tatCaBaiViet
-  .filter((b) => b.id !== bai.id)
-  .filter(
-    (b) =>
-      b.data.danh_muc === bai.data.danh_muc ||
-      b.data.tags.some((tag) => bai.data.tags.includes(tag))
-  )
+const relatedPosts = allEntries
+  .filter((other) => getPostSlug(other) !== pageSlug)
+  .sort((a, b) => {
+    const catA = String(a.data?.danh_muc || a.data?.category || '') === category ? 2 : 0;
+    const catB = String(b.data?.danh_muc || b.data?.category || '') === category ? 2 : 0;
+    const tagsA: string[] = Array.isArray(a.data?.tags) ? a.data.tags : [];
+    const tagsB: string[] = Array.isArray(b.data?.tags) ? b.data.tags : [];
+    const overlapA = tagsA.filter((t) => tags.includes(t)).length;
+    const overlapB = tagsB.filter((t) => tags.includes(t)).length;
+    return catB + overlapB - (catA + overlapA) || getPostDate(b).localeCompare(getPostDate(a));
+  })
   .slice(0, 3);
+
+const blogPostingJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: entry.data?.seo_title || title,
+  description: entry.data?.seo_description || excerpt,
+  datePublished: date,
+  mainEntityOfPage: canonicalTarget,
+  ...(cover ? { image: cover } : {}),
+  author: {
+    '@type': 'Person',
+    name: resolvedAuthor,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: SITE_CONFIG.authorName,
+  },
+};
 ---
 
-<BoCucBaiViet baiViet={bai} thoiGianDoc={thoiGianDoc} danhSachTieuDeMuc={headings} baiLienQuan={baiLienQuan}>
-  <Content />
-</BoCucBaiViet>
+<BaseLayout
+  title={entry.data?.seo_title || title}
+  description={entry.data?.seo_description || excerpt}
+  ogImage={cover}
+  noindex={Boolean(entry.data?.noindex)}
+  canonical={entry.data?.canonical_url}
+  jsonLd={blogPostingJsonLd}
+>
+  <article class="article-wrap">
+    <a class="back-link" href={withBase('/bai-viet/')}>← Quay lại kho bài viết</a>
+
+    <header class="article-header">
+      <div class="article-meta">
+        <span class="meta-cat">{category}</span>
+        <span>·</span>
+        <span>{formatVietnameseDate(date)}</span>
+        <span>·</span>
+        <span>{minutes} phút đọc</span>
+      </div>
+      <h1>{title}</h1>
+      {excerpt && <p class="article-lead">{excerpt}</p>}
+      <div class="article-byline">Bởi <strong>{resolvedAuthor}</strong></div>
+    </header>
+
+    {cover && (
+      <figure class="article-cover">
+        <img src={cover} alt={title} />
+      </figure>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {tags.length > 0 && (
+      <div class="tag-row">
+        Chủ đề: {tags.map((t) => `#${t}`).join(' · ')}
+      </div>
+    )}
+
+    <aside class="author-box">
+      <div class="author-name">{resolvedAuthor}</div>
+      <p class="author-bio">{SITE_CONFIG.authorBio}</p>
+    </aside>
+  </article>
+
+  {relatedPosts.length > 0 && (
+    <section class="related-section">
+      <h2 class="related-title">Bài viết liên quan</h2>
+      <div class="related-grid">
+        {relatedPosts.map((rel) => (
+          <PostCard entry={rel} />
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .article-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.86rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .article-header {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 26px;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .meta-cat {
+    color: var(--link);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .article-header h1 {
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    line-height: 1.15;
+  }
+
+  .article-lead {
+    margin: 0 0 12px;
+    font-size: 1.08rem;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .article-byline {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  .tag-row {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .article-cover {
+    margin: 0 0 28px;
+  }
+
+  .article-cover img {
+    width: 100%;
+    max-height: 440px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .author-box {
+    margin-top: 36px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .author-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+  }
+
+  .author-bio {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-2);
+  }
+
+  .related-section {
+    max-width: 1120px;
+    margin: 48px auto 0;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .related-title {
+    margin: 0 0 18px;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  @media (min-width: 640px) {
+    .related-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 960px) {
+    .related-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

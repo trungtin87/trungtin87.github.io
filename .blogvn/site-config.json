@@ -1,0 +1,67 @@
+{
+  "siteTitle": "Đạo ký của một phàm nhân",
+  "tagline": "Nhật ký nghiên cứu kỹ thuật, thiết kế hệ thống và những ghi chép tĩnh tại trên GitHub Pages.",
+  "siteIcon": "./assets/aistudio/1794978557793_3b5d5cb0.png",
+  "headerTitle": "Đạo Ký",
+  "headerNavLinks": [],
+  "footerText": "Xuất bản trực tiếp qua GitHub Pages & BlogVN.",
+  "footerLinks": [],
+  "authorName": "BÙI TRUNG TÍN",
+  "authorBio": "Tác giả blog cá nhân chia sẻ ghi chép thực chiến, tiểu luận và góc nhìn dài hạn.",
+  "githubOwner": "trungtin87",
+  "githubRepo": "trungtin87.github.io",
+  "pagesUrl": "https://trungtin87.github.io",
+  "themeMode": "dark",
+  "postsDirectory": "src/content/bai_viet",
+  "astroTemplate": "espresso-salon",
+  "liveChat": {
+    "enabled": false,
+    "title": "Trò chuyện với tác giả",
+    "welcomeText": "Chọn kênh liên hệ trực tiếp bên dưới để nhắn tin nhanh.",
+    "channels": [
+      {
+        "id": "zalo",
+        "enabled": true,
+        "value": "",
+        "label": "Zalo"
+      },
+      {
+        "id": "messenger",
+        "enabled": true,
+        "value": "",
+        "label": "Messenger"
+      },
+      {
+        "id": "telegram",
+        "enabled": false,
+        "value": "",
+        "label": "Telegram"
+      },
+      {
+        "id": "whatsapp",
+        "enabled": false,
+        "value": "",
+        "label": "WhatsApp"
+      },
+      {
+        "id": "email",
+        "enabled": false,
+        "value": "",
+        "label": "Email"
+      },
+      {
+        "id": "tawkto",
+        "enabled": false,
+        "value": "",
+        "label": "Tawk.to Widget"
+      },
+      {
+        "id": "crisp",
+        "enabled": false,
+        "value": "",
+        "label": "Crisp Chat"
+      }
+    ]
+  },
+  "authorAvatar": "https://avatars.githubusercontent.com/u/23460916?v=4"
+}

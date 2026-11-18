@@ -1,29 +1,196 @@
 ---
-// src/pages/bai-viet/index.astro — Danh sách tất cả bài viết
-import { getCollection } from "astro:content";
-import BoCucMacDinh from "../../bo_cuc/BoCucMacDinh.astro";
-import TheBaiViet from "../../thanh_phan/TheBaiViet.astro";
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_CONFIG } from '../../cau_hinh/trang_web';
+import { getPostDate } from '../../utils/url';
 
-const tatCaBaiViet = (await getCollection("bai_viet", ({ data }) => !data.nhap)).sort(
-  (a, b) => b.data.ngay.valueOf() - a.data.ngay.valueOf()
+const entries = (await getCollection('bai_viet'))
+  .filter((e) => !e.data.nhap && !e.data.draft)
+  .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+
+const categories = Array.from(
+  new Set(
+    entries
+      .map((e) => String(e.data?.danh_muc || e.data?.category || 'Bài viết').trim())
+      .filter(Boolean)
+  )
 );
 ---
 
-<BoCucMacDinh tieuDeTrang="Tất cả bài viết">
-  <section class="border-b py-20" style="border-color:var(--border)">
-    <div class="container mx-auto max-w-6xl px-7">
-      <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">Bài viết</p>
-      <h1>Tất cả bài viết</h1>
-      <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
-        Ghi chép kỹ thuật và triết học — nơi Âm Dương, Vô vi và mã nguồn gặp nhau.
-      </p>
+<BaseLayout title="Kho bài viết" description="Toàn bộ bài viết, tiểu luận và ghi chép trên blog.">
+  <div class="col-header">
+    <h1>Kho bài viết</h1>
+    <p>Tất cả {entries.length} bài viết đã xuất bản.</p>
+
+    <div class="archive-tools">
+      <input
+        id="archiveSearchInput"
+        type="search"
+        placeholder="Tìm trong kho bài viết..."
+        class="archive-search"
+      />
+      {categories.length > 1 && (
+        <div id="archiveCatBar" class="cat-bar" role="tablist" aria-label="Lọc theo chuyên mục">
+          <button type="button" class="cat-btn active" data-cat="all">
+            Tất cả ({entries.length})
+          </button>
+          {categories.map((cat) => (
+            <button type="button" class="cat-btn" data-cat={cat.toLowerCase()}>
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
-  </section>
-  <section class="py-20">
-    <div class="container mx-auto max-w-6xl px-7">
-      <div class="grid gap-11 gap-x-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {tatCaBaiViet.map((bai) => <TheBaiViet bai={bai} />)}
-      </div>
+  </div>
+
+  {entries.length === 0 ? (
+    <p style="color: var(--muted);">Chưa có bài viết nào được xuất bản.</p>
+  ) : (
+    <div id="archiveGrid" class={`col-grid template-${SITE_CONFIG.templateStyle}`}>
+      {entries.map((entry) => (
+        <div
+          class="archive-item"
+          data-cat={String(entry.data?.danh_muc || entry.data?.category || 'Bài viết').trim().toLowerCase()}
+        >
+          <PostCard entry={entry} />
+        </div>
+      ))}
     </div>
-  </section>
-</BoCucMacDinh>
+  )}
+  <p id="archiveEmptyMsg" class="empty-archive hidden">Không có bài viết nào khớp bộ lọc hiện tại.</p>
+
+  <script is:inline>
+    const archiveInput = document.getElementById('archiveSearchInput');
+    const archiveCatBar = document.getElementById('archiveCatBar');
+    const archiveGrid = document.getElementById('archiveGrid');
+    const archiveEmpty = document.getElementById('archiveEmptyMsg');
+    let currentCat = 'all';
+
+    function filterArchive() {
+      if (!archiveGrid) return;
+      const q = (archiveInput ? archiveInput.value : '').trim().toLowerCase();
+      const items = archiveGrid.querySelectorAll('.archive-item');
+      let shown = 0;
+      items.forEach((item) => {
+        const cat = item.getAttribute('data-cat') || '';
+        const card = item.querySelector('.post-card');
+        const txt = card ? (card.getAttribute('data-search') || '') : '';
+        const okCat = currentCat === 'all' || cat === currentCat;
+        const okSearch = !q || txt.includes(q);
+        const visible = okCat && okSearch;
+        item.style.display = visible ? '' : 'none';
+        if (visible) shown++;
+      });
+      if (archiveEmpty) {
+        archiveEmpty.classList.toggle('hidden', shown > 0);
+      }
+    }
+
+    if (archiveInput) {
+      archiveInput.addEventListener('input', filterArchive);
+    }
+    if (archiveCatBar) {
+      archiveCatBar.querySelectorAll('.cat-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentCat = btn.getAttribute('data-cat') || 'all';
+          archiveCatBar.querySelectorAll('.cat-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          filterArchive();
+        });
+      });
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .col-header {
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .col-header h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+  .col-header p {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .archive-tools {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .archive-search {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 720px;
+    min-width: 0;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    line-height: normal;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 0.92rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .cat-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cat-btn {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .cat-btn.active {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .col-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 720px) {
+    .col-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .col-grid.template-nytimes-light,
+    .col-grid.template-obsidian-broadsheet,
+    .col-grid.template-bbc-dark {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .empty-archive {
+    color: var(--muted);
+    padding: 20px 0;
+  }
+  .hidden {
+    display: none;
+  }
+</style>

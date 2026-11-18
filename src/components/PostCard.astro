@@ -1,0 +1,144 @@
+---
+import {
+  estimateReadingTime,
+  formatVietnameseDate,
+  getPostCover,
+  getPostDate,
+  getPostExcerpt,
+  getPostSlug,
+  getPostTitle,
+  withBase,
+} from '../utils/url';
+
+interface Props {
+  entry: any;
+  featured?: boolean;
+}
+
+const { entry, featured = false } = Astro.props;
+const slug = getPostSlug(entry);
+const href = withBase(`/bai-viet/${slug}/`);
+const title = getPostTitle(entry);
+const date = getPostDate(entry);
+const excerpt = getPostExcerpt(entry);
+const cover = getPostCover(entry);
+const category = String(entry.data?.danh_muc || entry.data?.category || 'Bài viết');
+const minutes = estimateReadingTime(entry.body || '');
+---
+
+<article
+  class={`post-card ${featured ? 'is-featured' : ''}`}
+  data-search={`${title} ${excerpt} ${category}`.toLowerCase()}
+>
+  <a class="post-card-link" href={href}>
+    {cover && (
+      <div class="post-cover-wrap">
+        <img src={cover} alt={title} loading="lazy" />
+      </div>
+    )}
+    <div class="post-body">
+      <div class="post-meta">
+        <span class="post-cat">{category}</span>
+        <span>·</span>
+        <span>{formatVietnameseDate(date)}</span>
+        <span>·</span>
+        <span>{minutes} phút đọc</span>
+      </div>
+      <h3 class="post-title">{title}</h3>
+      <p class="post-excerpt">{excerpt}</p>
+    </div>
+  </a>
+</article>
+
+<style>
+  .post-card {
+    height: 100%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  :global(body[data-template='nytimes-light']) .post-card,
+  :global(body[data-template='obsidian-broadsheet']) .post-card,
+  :global(body[data-template='newyorker-light']) .post-card {
+    border-radius: 6px;
+  }
+
+  .post-card:hover {
+    border-color: var(--link);
+    transform: translateY(-1px);
+  }
+
+  .post-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none !important;
+  }
+
+  .post-cover-wrap {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .post-cover-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .post-body {
+    flex: 1;
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+  }
+
+  .post-cat {
+    color: var(--link);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .post-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.24rem;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .post-card.is-featured .post-title {
+    font-size: 1.65rem;
+    line-height: 1.2;
+  }
+
+  .post-excerpt {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-2);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

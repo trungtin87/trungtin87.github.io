@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Minh họa ký hiệu kỹ thuật tối giản">
-<rect width="400" height="300" fill="#ffffff"/>
-<g stroke="#111111" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="140,90 90,150 140,210"/>
-<polyline points="260,90 310,150 260,210"/>
-<line x1="190" y1="220" x2="210" y2="80"/>
-</g>
-</svg>

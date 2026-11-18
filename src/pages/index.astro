@@ -1,89 +1,360 @@
 ---
-// src/pages/index.astro — Trang chủ
-import { getCollection } from "astro:content";
-import BoCucMacDinh from "../bo_cuc/BoCucMacDinh.astro";
-import TheBaiViet from "../thanh_phan/TheBaiViet.astro";
-import TheDuAn from "../thanh_phan/TheDuAn.astro";
-import { cauHinh } from "../cau_hinh/trang_web";
-import { LOGO_MANIFEST_512 } from "../cau_hinh/logo_base64";
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE_CONFIG } from '../cau_hinh/trang_web';
+import {
+  estimateReadingTime,
+  formatVietnameseDate,
+  getPostCover,
+  getPostDate,
+  getPostExcerpt,
+  getPostSlug,
+  getPostTitle,
+  withBase,
+} from '../utils/url';
 
-const tatCaBaiViet = (await getCollection("bai_viet", ({ data }) => !data.nhap)).sort(
-  (a, b) => b.data.ngay.valueOf() - a.data.ngay.valueOf()
-);
-const baiVietMoiNhat = tatCaBaiViet.slice(0, 3);
+const posts = (await getCollection('bai_viet'))
+  .filter((e) => !e.data.nhap && !e.data.draft)
+  .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
 
-const tatCaDuAn = await getCollection("du_an");
-const duAnMoiNhat = tatCaDuAn.slice(0, 2);
+const leadPost = posts[0] || null;
+const secondaryPosts = posts.slice(1);
+const leadCover = leadPost ? getPostCover(leadPost) : undefined;
+const leadSlug = leadPost ? getPostSlug(leadPost) : '';
+const leadHref = leadPost ? withBase(`/bai-viet/${leadSlug}/`) : '#';
 
-// Gom toàn bộ tag của các bài viết, loại trùng, để làm "đám mây danh mục".
-const tatCaTag = Array.from(new Set(tatCaBaiViet.flatMap((bai) => bai.data.tags))).sort();
+const homeJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: SITE_CONFIG.siteTitle,
+  description: SITE_CONFIG.tagline,
+  url: SITE_CONFIG.pagesUrl,
+  author: {
+    '@type': 'Person',
+    name: SITE_CONFIG.authorName,
+  },
+};
 ---
 
-<BoCucMacDinh tieuDeTrang={cauHinh.ten_trangweb}>
-  <section class="border-b py-20" style="border-color:var(--border)">
-    <div class="container mx-auto max-w-6xl px-7 grid gap-11 items-center grid-cols-1 sm:grid-cols-[auto_1fr]">
-      <img
-        class="w-24 h-24"
-        src={LOGO_MANIFEST_512}
-        alt={`Biểu tượng Lưỡng Nghi (Thái Cực) của ${cauHinh.ten_trangweb}`}
-        width="96"
-        height="96"
+<BaseLayout jsonLd={homeJsonLd}>
+  <section class="masthead">
+    <div class="masthead-kicker">{SITE_CONFIG.authorName} · Ấn phẩm Blog cá nhân</div>
+    <h1>{SITE_CONFIG.siteTitle}</h1>
+    <p class="masthead-desc">{SITE_CONFIG.tagline}</p>
+
+    <div class="masthead-tools">
+      <input
+        id="homeSearchInput"
+        type="search"
+        placeholder="Tìm bài viết theo tiêu đề, chủ đề..."
+        class="search-input"
       />
-      <div>
-        <p class="uppercase tracking-[0.14em] text-[0.78rem] mb-3" style="color:var(--text-mo)">
-          Thư phòng số của {cauHinh.tac_gia}
-        </p>
-        <h1>{cauHinh.ten_trangweb}</h1>
-        <p class="text-[1rem] -mt-1.5 mb-3.5" style="color:var(--text-mo)">{cauHinh.bi_danh}</p>
-        <p class="text-[1.1rem] max-w-[56ch]" style="color:var(--text-mo)">
-          Một nơi lưu giữ tri thức, kinh nghiệm và các dự án cá nhân — viết theo tinh thần Đạo giáo
-          hiện đại: đơn giản, tự nhiên, không dư thừa. Kỹ thuật được nhìn qua lăng kính của Âm — Dương
-          và Vô vi.
-        </p>
-      </div>
+      <a class="masthead-cta" href={withBase('/bai-viet/')}>Kho bài viết ({posts.length})</a>
     </div>
   </section>
 
-  <section class="border-b py-20" style="border-color:var(--border)">
-    <div class="container mx-auto max-w-6xl px-7">
-      <div class="flex items-baseline justify-between gap-7 mb-11">
-        <h2>Bài viết mới</h2>
-        <a class="text-[0.92rem] whitespace-nowrap" href="/bai-viet">Xem tất cả bài viết →</a>
-      </div>
-      <div class="grid gap-11 gap-x-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {baiVietMoiNhat.map((bai) => <TheBaiViet bai={bai} />)}
-      </div>
+  {leadPost && (
+    <section class="lead-section" data-search={`${getPostTitle(leadPost)} ${getPostExcerpt(leadPost)}`.toLowerCase()}>
+      <a class="lead-card" href={leadHref}>
+        <div class="lead-text">
+          <div class="lead-meta">
+            <span class="lead-rubric">{String(leadPost.data?.danh_muc || 'Tiêu điểm')}</span>
+            <span>·</span>
+            <span>{formatVietnameseDate(getPostDate(leadPost))}</span>
+            <span>·</span>
+            <span>{estimateReadingTime(leadPost.body || '')} phút đọc</span>
+          </div>
+          <h2>{getPostTitle(leadPost)}</h2>
+          <p>{getPostExcerpt(leadPost)}</p>
+          <span class="read-more">Đọc trọn bài viết →</span>
+        </div>
+        {leadCover && (
+          <div class="lead-media">
+            <img src={leadCover} alt={getPostTitle(leadPost)} />
+          </div>
+        )}
+      </a>
+    </section>
+  )}
+
+  <section class="posts-section">
+    <div class="section-head">
+      <h2>Bài viết gần đây</h2>
     </div>
+
+    {posts.length === 0 ? (
+      <p class="empty-note">Chưa có bài viết nào được xuất bản.</p>
+    ) : (
+      <div id="postsGrid" class={`posts-grid template-${SITE_CONFIG.templateStyle}`}>
+        {secondaryPosts.map((entry) => (
+          <PostCard entry={entry} />
+        ))}
+      </div>
+    )}
+    <p id="searchEmptyMsg" class="empty-note hidden">Không tìm thấy bài viết phù hợp với từ khóa của bạn.</p>
   </section>
 
-  <section class="border-b py-20" style="border-color:var(--border)">
-    <div class="container mx-auto max-w-6xl px-7">
-      <div class="mb-11"><h2>Danh mục</h2></div>
-      <div class="flex flex-wrap gap-2.5">
-        {
-          tatCaTag.map((tag) => (
-            <a
-              class="border rounded-full px-3.5 py-1.5 no-underline text-[0.9rem]"
-              style="border-color:var(--border);color:var(--text)"
-              href={`/tag/${tag}`}
-            >
-              #{tag}
-            </a>
-          ))
+  <script is:inline>
+    const input = document.getElementById('homeSearchInput');
+    const grid = document.getElementById('postsGrid');
+    const leadSection = document.querySelector('.lead-section');
+    const emptyMsg = document.getElementById('searchEmptyMsg');
+    if (input && grid) {
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        const cards = grid.querySelectorAll('.post-card');
+        let visible = 0;
+        if (leadSection) {
+          const leadText = leadSection.getAttribute('data-search') || '';
+          const matchLead = !q || leadText.includes(q);
+          leadSection.style.display = matchLead ? '' : 'none';
+          if (matchLead) visible++;
         }
-      </div>
-    </div>
-  </section>
+        cards.forEach((card) => {
+          const text = card.getAttribute('data-search') || '';
+          const match = !q || text.includes(q);
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        if (emptyMsg) {
+          emptyMsg.classList.toggle('hidden', visible > 0);
+        }
+      });
+    }
+  </script>
+</BaseLayout>
 
-  <section class="py-20">
-    <div class="container mx-auto max-w-6xl px-7">
-      <div class="flex items-baseline justify-between gap-7 mb-11">
-        <h2>Dự án mới</h2>
-        <a class="text-[0.92rem] whitespace-nowrap" href="/du-an">Xem tất cả dự án →</a>
-      </div>
-      <div class="grid gap-11 grid-cols-1 sm:grid-cols-2">
-        {duAnMoiNhat.map((duAn) => <TheDuAn duAn={duAn} />)}
-      </div>
-    </div>
-  </section>
-</BoCucMacDinh>
+<style>
+  .masthead {
+    padding: 18px 0 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  :global(body[data-template='newyorker-light']) .masthead {
+    text-align: center;
+    border-bottom: 3px double var(--border);
+    padding: 26px 0 32px;
+  }
+
+  :global(body[data-template='newyorker-light']) .masthead-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  :global(body[data-template='newyorker-light']) .masthead-tools {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 780px;
+  }
+
+  .masthead-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    margin-bottom: 10px;
+  }
+
+  .masthead h1 {
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 4.8vw, 3.25rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  .masthead-desc {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--text-2);
+    font-size: 1.02rem;
+  }
+
+  .masthead-tools {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .search-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    line-height: normal;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 0.92rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .masthead-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 639px) {
+    .masthead-tools {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      max-width: none;
+    }
+    .search-input {
+      width: 100%;
+      height: 44px;
+    }
+    .masthead-cta {
+      width: 100%;
+      height: 44px;
+    }
+  }
+
+  .lead-section {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lead-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none !important;
+  }
+
+  @media (min-width: 800px) {
+    .lead-card {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 32px;
+    }
+  }
+
+  .lead-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .lead-rubric {
+    color: var(--link);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .lead-text h2 {
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    line-height: 1.18;
+    color: var(--text);
+  }
+
+  .lead-card:hover .lead-text h2 {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .lead-text p {
+    margin: 0 0 14px;
+    color: var(--text-2);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .read-more {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--link);
+  }
+
+  .lead-media {
+    aspect-ratio: 16 / 10;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .lead-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .posts-section {
+    padding-top: 28px;
+  }
+
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin: 0 0 18px;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media (min-width: 720px) {
+    .posts-grid.template-newyorker-light,
+    .posts-grid.template-espresso-salon {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .posts-grid.template-nytimes-light,
+    .posts-grid.template-obsidian-broadsheet,
+    .posts-grid.template-bbc-dark {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .posts-grid.template-nytimes-light,
+    .posts-grid.template-obsidian-broadsheet,
+    .posts-grid.template-bbc-dark {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .empty-note {
+    color: var(--muted);
+    padding: 24px 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
