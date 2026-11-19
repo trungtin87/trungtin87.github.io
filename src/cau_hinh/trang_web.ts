@@ -43,8 +43,8 @@ export interface SiteIdentityConfig {
 }
 
 export const SITE_CONFIG: SiteIdentityConfig = {
-  "siteTitle": "Đạo ký của một phàm nhân",
-  "tagline": "Tìm hiểu sự Huyền Diệu của cái KHÔNG",
+  "siteTitle": "Bùi Gia Trang",
+  "tagline": "Tìm hiểu sự Huyền diệu của cái Không",
   "siteIcon": "/favicon.png",
   "headerTitle": "Huyền Không Thư Quán",
   "headerNavLinks": [],
