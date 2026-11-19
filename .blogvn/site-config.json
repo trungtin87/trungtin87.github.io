@@ -1,13 +1,13 @@
 {
   "siteTitle": "Đạo ký của một phàm nhân",
-  "tagline": "Nhật ký nghiên cứu kỹ thuật, thiết kế hệ thống và những ghi chép tĩnh tại trên GitHub Pages.",
+  "tagline": "Tìm hiểu sự Huyền Diệu của cái KHÔNG",
   "siteIcon": "./assets/aistudio/1794978557793_3b5d5cb0.png",
-  "headerTitle": "Đạo Ký",
+  "headerTitle": "Huyền Không Thư Quán",
   "headerNavLinks": [],
-  "footerText": "Xuất bản trực tiếp qua GitHub Pages & BlogVN.",
+  "footerText": "@2026 HUYỀN KHÔNG THƯ QUÁN",
   "footerLinks": [],
-  "authorName": "BÙI TRUNG TÍN",
-  "authorBio": "Tác giả blog cá nhân chia sẻ ghi chép thực chiến, tiểu luận và góc nhìn dài hạn.",
+  "authorName": "Huyền Không",
+  "authorBio": "",
   "githubOwner": "trungtin87",
   "githubRepo": "trungtin87.github.io",
   "pagesUrl": "https://trungtin87.github.io",
@@ -21,13 +21,13 @@
     "channels": [
       {
         "id": "zalo",
-        "enabled": true,
+        "enabled": false,
         "value": "",
         "label": "Zalo"
       },
       {
         "id": "messenger",
-        "enabled": true,
+        "enabled": false,
         "value": "",
         "label": "Messenger"
       },

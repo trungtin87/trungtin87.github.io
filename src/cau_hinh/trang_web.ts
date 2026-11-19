@@ -44,14 +44,14 @@ export interface SiteIdentityConfig {
 
 export const SITE_CONFIG: SiteIdentityConfig = {
   "siteTitle": "Đạo ký của một phàm nhân",
-  "tagline": "Nhật ký nghiên cứu kỹ thuật, thiết kế hệ thống và những ghi chép tĩnh tại trên GitHub Pages.",
+  "tagline": "Tìm hiểu sự Huyền Diệu của cái KHÔNG",
   "siteIcon": "/favicon.png",
-  "headerTitle": "Đạo Ký",
+  "headerTitle": "Huyền Không Thư Quán",
   "headerNavLinks": [],
-  "footerText": "Xuất bản trực tiếp qua GitHub Pages & BlogVN.",
+  "footerText": "@2026 HUYỀN KHÔNG THƯ QUÁN",
   "footerLinks": [],
-  "authorName": "BÙI TRUNG TÍN",
-  "authorBio": "Tác giả blog cá nhân chia sẻ ghi chép thực chiến, tiểu luận và góc nhìn dài hạn.",
+  "authorName": "Huyền Không",
+  "authorBio": "Tác giả blog cá nhân chia sẻ bài viết, quan điểm và ghi chép dài hạn.",
   "themeMode": "dark",
   "templateStyle": "espresso-salon",
   "pagesUrl": "https://trungtin87.github.io",
@@ -64,13 +64,13 @@ export const SITE_CONFIG: SiteIdentityConfig = {
     "channels": [
       {
         "id": "zalo",
-        "enabled": true,
+        "enabled": false,
         "value": "",
         "label": "Zalo"
       },
       {
         "id": "messenger",
-        "enabled": true,
+        "enabled": false,
         "value": "",
         "label": "Messenger"
       },
