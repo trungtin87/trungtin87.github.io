@@ -17,12 +17,38 @@ export interface LiveChatSettings {
   channels: LiveChatChannel[];
 }
 
+export interface GiscusSettings {
+  enabled: boolean;
+  repo: string;
+  repoId: string;
+  category: string;
+  categoryId: string;
+}
+
 export type AstroTemplateStyle =
   | 'newyorker-light'
   | 'nytimes-light'
   | 'bbc-dark'
   | 'obsidian-broadsheet'
-  | 'espresso-salon';
+  | 'espresso-salon'
+  | 'monocle-magazine'
+  | 'guardian-portal'
+  | 'kyoto-folio'
+  | 'economist-digest'
+  | 'nordic-atlas';
+
+export interface ThemeModeColorOverrides {
+  canvas?: string;
+  surface?: string;
+  textPrimary?: string;
+  accent?: string;
+  link?: string;
+}
+
+export interface ThemeCustomColors {
+  light?: ThemeModeColorOverrides;
+  dark?: ThemeModeColorOverrides;
+}
 
 export interface SiteIdentityConfig {
   siteTitle: string;
@@ -36,9 +62,13 @@ export interface SiteIdentityConfig {
   authorBio: string;
   themeMode: 'light' | 'dark';
   templateStyle: AstroTemplateStyle;
+  themeColors?: ThemeCustomColors;
+  isMultiPage: boolean;
   pagesUrl: string;
-  githubOwner: string;
-  githubRepo: string;
+  customDomain?: string;
+  analyticsProvider?: 'none' | 'ga4' | 'cloudflare' | 'plausible' | 'umami';
+  analyticsId?: string;
+  giscus?: GiscusSettings;
   liveChat?: LiveChatSettings;
 }
 
@@ -54,9 +84,34 @@ export const SITE_CONFIG: SiteIdentityConfig = {
   "authorBio": "Tác giả blog cá nhân chia sẻ bài viết, quan điểm và ghi chép dài hạn.",
   "themeMode": "dark",
   "templateStyle": "espresso-salon",
+  "themeColors": {
+    "light": {
+      "canvas": "#F7FAF8",
+      "surface": "#EAF2ED",
+      "textPrimary": "#122119",
+      "accent": "#14532D",
+      "link": "#15803D"
+    },
+    "dark": {
+      "canvas": "#0E1512",
+      "surface": "#16211C",
+      "textPrimary": "#ECFDF5",
+      "accent": "#34D399",
+      "link": "#6EE7B7"
+    }
+  },
+  "isMultiPage": false,
   "pagesUrl": "https://trungtin87.github.io",
-  "githubOwner": "trungtin87",
-  "githubRepo": "trungtin87.github.io",
+  "customDomain": "",
+  "analyticsProvider": "none",
+  "analyticsId": "",
+  "giscus": {
+    "enabled": false,
+    "repo": "",
+    "repoId": "",
+    "category": "Announcements",
+    "categoryId": ""
+  },
   "liveChat": {
     "enabled": false,
     "title": "Trò chuyện với tác giả",
