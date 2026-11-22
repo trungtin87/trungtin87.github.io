@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import { SITE_CONFIG } from '../cau_hinh/trang_web';
 import { withBase } from '../utils/url';
 
@@ -26,7 +27,75 @@ const iconHref = withBase(SITE_CONFIG.siteIcon || '/favicon.svg');
 const ogImgHref = withBase(ogImage);
 const initialMode = SITE_CONFIG.themeMode === 'dark' ? 'dark' : 'light';
 const initialDark = initialMode === 'dark';
+const defaultThemeSig = `${SITE_CONFIG.templateStyle}:${initialMode}:${JSON.stringify(SITE_CONFIG.themeColors || null)}`;
 const currentPath = Astro.url.pathname;
+
+const BASE_TEMPLATE_COLORS: Record<string, { light: Record<string, string>; dark: Record<string, string> }> = {"newyorker-light":{"light":{"bg":"#FAF7F2","surface":"#F2EDE4","card":"#FFFFFF","border":"#DDD5C7","text":"#141414","text2":"#3A352E","muted":"#6E665A","accent":"#141414","accentText":"#FAF7F2","link":"#B91C1C"},"dark":{"bg":"#161411","surface":"#201D18","card":"#28241E","border":"#3A332A","text":"#F5EFE6","text2":"#D8CFC2","muted":"#A19585","accent":"#FAF7F2","accentText":"#161411","link":"#F87171"}},"nytimes-light":{"light":{"bg":"#FFFFFF","surface":"#F5F6F8","card":"#FFFFFF","border":"#D4D4D8","text":"#0F172A","text2":"#334155","muted":"#64748B","accent":"#0F172A","accentText":"#FFFFFF","link":"#1E3A8A"},"dark":{"bg":"#0E1218","surface":"#161C26","card":"#1D2432","border":"#2C3548","text":"#F8FAFC","text2":"#CBD5E1","muted":"#94A3B8","accent":"#F8FAFC","accentText":"#0E1218","link":"#60A5FA"}},"bbc-dark":{"light":{"bg":"#F6F7F9","surface":"#EBEDF2","card":"#FFFFFF","border":"#D4D7DF","text":"#111216","text2":"#374151","muted":"#6B7280","accent":"#E11D48","accentText":"#FFFFFF","link":"#BE123C"},"dark":{"bg":"#121214","surface":"#1A1B1F","card":"#22242A","border":"#2E313A","text":"#F4F4F5","text2":"#D4D4D8","muted":"#A1A1AA","accent":"#E11D48","accentText":"#FFFFFF","link":"#FB7185"}},"obsidian-broadsheet":{"light":{"bg":"#F3F6FB","surface":"#E6ECF5","card":"#FFFFFF","border":"#CBD5E1","text":"#0F172A","text2":"#334155","muted":"#64748B","accent":"#0F172A","accentText":"#FFFFFF","link":"#1D4ED8"},"dark":{"bg":"#0B0D12","surface":"#131722","card":"#1A1F2E","border":"#273043","text":"#F3F4F6","text2":"#CBD5E1","muted":"#94A3B8","accent":"#F3F4F6","accentText":"#0B0D12","link":"#60A5FA"}},"espresso-salon":{"light":{"bg":"#FAF4EC","surface":"#F1E7DA","card":"#FFFFFF","border":"#DECDB9","text":"#261C15","text2":"#4E3E31","muted":"#7D6A5A","accent":"#9A5B13","accentText":"#FFFFFF","link":"#B45309"},"dark":{"bg":"#161210","surface":"#201A17","card":"#29221E","border":"#3B312B","text":"#F5EFE6","text2":"#D6CBC0","muted":"#A39589","accent":"#E5A93C","accentText":"#161210","link":"#FBBF24"}},"monocle-magazine":{"light":{"bg":"#F8F6F0","surface":"#EFECE3","card":"#FFFFFF","border":"#D7D0C3","text":"#1A1D1A","text2":"#3D423D","muted":"#676E66","accent":"#14532D","accentText":"#F8F6F0","link":"#166534"},"dark":{"bg":"#111613","surface":"#19211C","card":"#212B25","border":"#2E3B33","text":"#F2F4F1","text2":"#CED6CF","muted":"#92A096","accent":"#86EFAC","accentText":"#0F1A14","link":"#4ADE80"}},"guardian-portal":{"light":{"bg":"#FFFFFF","surface":"#F3F5F8","card":"#FFFFFF","border":"#D5DCE6","text":"#121826","text2":"#334155","muted":"#64748B","accent":"#0B2A5B","accentText":"#FFFFFF","link":"#B91C1C"},"dark":{"bg":"#0B111E","surface":"#131C2E","card":"#1A253B","border":"#293754","text":"#F8FAFC","text2":"#CBD5E1","muted":"#94A3B8","accent":"#38BDF8","accentText":"#081221","link":"#F87171"}},"kyoto-folio":{"light":{"bg":"#FBF9F5","surface":"#F0ECE4","card":"#FFFFFF","border":"#DCD4C8","text":"#1C1917","text2":"#44403C","muted":"#78716C","accent":"#9A3412","accentText":"#FBF9F5","link":"#9A3412"},"dark":{"bg":"#161412","surface":"#211D1A","card":"#2A2521","border":"#3C352F","text":"#F5F2ED","text2":"#D6D0C8","muted":"#A8A29E","accent":"#FDBA74","accentText":"#1C140F","link":"#FB923C"}},"economist-digest":{"light":{"bg":"#F7F8FA","surface":"#ECEEF3","card":"#FFFFFF","border":"#D1D5DB","text":"#111827","text2":"#374151","muted":"#6B7280","accent":"#B91C1C","accentText":"#FFFFFF","link":"#B91C1C"},"dark":{"bg":"#101218","surface":"#181B24","card":"#202430","border":"#2E3445","text":"#F3F4F6","text2":"#D1D5DB","muted":"#9CA3AF","accent":"#E11D48","accentText":"#FFFFFF","link":"#FB7185"}},"nordic-atlas":{"light":{"bg":"#F2F6F7","surface":"#E4ECEE","card":"#FFFFFF","border":"#C6D4D8","text":"#0F1C21","text2":"#2D4249","muted":"#5C737B","accent":"#0F766E","accentText":"#FFFFFF","link":"#0F766E"},"dark":{"bg":"#0D1317","surface":"#141E24","card":"#1B2830","border":"#293B46","text":"#EDF2F4","text2":"#C5D3D9","muted":"#889DA6","accent":"#2DD4BF","accentText":"#0A1416","link":"#2DD4BF"}}};
+const HEX_COLOR_RE = new RegExp('^#[0-9a-fA-F]{6}$');
+function cleanHex(v: unknown): string | undefined {
+  if (typeof v !== 'string') return undefined;
+  const s = v.trim();
+  return HEX_COLOR_RE.test(s) ? s.toUpperCase() : undefined;
+}
+function hexToRgbArr(hex: string): [number, number, number] {
+  return [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16),
+  ];
+}
+function mixColorHex(a: string, b: string, ratioB: number): string {
+  const [r1, g1, b1] = hexToRgbArr(a);
+  const [r2, g2, b2] = hexToRgbArr(b);
+  const clamp = (n: number) => Math.max(0, Math.min(255, Math.round(n)));
+  return '#' + [r1 + (r2 - r1) * ratioB, g1 + (g2 - g1) * ratioB, b1 + (b2 - b1) * ratioB]
+    .map((n) => clamp(n).toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+}
+function contrastForHex(bgHex: string): string {
+  const [r, g, b] = hexToRgbArr(bgHex).map((v) => {
+    const s = v / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.42 ? '#111216' : '#FFFFFF';
+}
+function buildCustomColorCss(): string {
+  const overrides = SITE_CONFIG.themeColors;
+  if (!overrides) return '';
+  const tplColors = BASE_TEMPLATE_COLORS[SITE_CONFIG.templateStyle] || BASE_TEMPLATE_COLORS['newyorker-light'];
+  const blocks: string[] = [];
+  (['light', 'dark'] as const).forEach((m) => {
+    const ov = overrides[m];
+    if (!ov) return;
+    const base = tplColors[m];
+    const isDark = m === 'dark';
+    const cBg = cleanHex(ov.canvas);
+    const cSurface = cleanHex(ov.surface);
+    const cText = cleanHex(ov.textPrimary);
+    const cAccent = cleanHex(ov.accent);
+    const cLink = cleanHex(ov.link);
+    if (!cBg && !cSurface && !cText && !cAccent && !cLink) return;
+    const bg = cBg || base.bg;
+    const text = cText || base.text;
+    const surface = cSurface || (cBg ? mixColorHex(bg, isDark ? '#FFFFFF' : '#000000', isDark ? 0.06 : 0.045) : base.surface);
+    const card = (cBg || cSurface) ? (isDark ? mixColorHex(surface, '#FFFFFF', 0.06) : mixColorHex(bg, '#FFFFFF', 0.72)) : base.card;
+    const border = (cBg || cText) ? mixColorHex(bg, text, isDark ? 0.2 : 0.14) : base.border;
+    const text2 = (cBg || cText) ? mixColorHex(text, bg, 0.22) : base.text2;
+    const muted = (cBg || cText) ? mixColorHex(text, bg, 0.45) : base.muted;
+    const accent = cAccent || base.accent;
+    const accentText = cAccent ? contrastForHex(accent) : base.accentText;
+    const link = cLink || base.link;
+    blocks.push(
+      `:root[data-mode='${m}'], :root[data-mode='${m}'] body[data-template][data-template] { --bg: ${bg}; --surface: ${surface}; --card: ${card}; --border: ${border}; --text: ${text}; --text-2: ${text2}; --muted: ${muted}; --accent: ${accent}; --accent-text: ${accentText}; --link: ${link}; }`
+    );
+  });
+  return blocks.join('\n');
+}
+const customColorCss = buildCustomColorCss();
+
+const analyticsProvider = SITE_CONFIG.analyticsProvider || 'none';
+const analyticsId = (SITE_CONFIG.analyticsId || '').trim();
 const liveChat = SITE_CONFIG.liveChat;
 const activeChatChannels = (liveChat?.channels || []).filter(
   (ch) => ch.enabled && ch.value && ch.value.trim().length > 0
@@ -58,10 +127,55 @@ function resolveChatHref(id: string, rawValue: string): string {
   return val;
 }
 
-const mainNav = [
-  { label: 'Trang nhất', href: withBase('/') },
-  { label: 'Kho bài viết', href: withBase('/bai-viet/') },
+const cleanCurrent = currentPath.replace(/\/+$/, '') || '/';
+const homeClean = withBase('/').replace(/\/+$/, '') || '/';
+
+function isNavActive(targetHref: string): boolean {
+  const cleanTarget = targetHref.replace(/\/+$/, '') || '/';
+  if (cleanTarget === homeClean) return cleanCurrent === homeClean;
+  return cleanCurrent === cleanTarget || cleanCurrent.startsWith(`${cleanTarget}/`);
+}
+
+let hasProjects = false;
+let hasBooks = false;
+let hasShop = false;
+try {
+  hasProjects = (await getCollection('du_an')).some((e) => !e.data.nhap && !e.data.draft);
+} catch {}
+try {
+  hasBooks = (await getCollection('sach')).some((e) => !e.data.nhap && !e.data.draft);
+} catch {}
+try {
+  hasShop = (await getCollection('cua_hang')).some((e) => !e.data.nhap && !e.data.draft);
+} catch {}
+
+const extraCollectionNav = [
+  ...(hasProjects ? [{ label: 'Dự án', href: withBase('/du-an/') }] : []),
+  ...(hasBooks ? [{ label: 'Sách', href: withBase('/sach/') }] : []),
+  ...(hasShop ? [{ label: 'Cửa hàng', href: withBase('/cua-hang/') }] : []),
 ];
+
+const mainNav = SITE_CONFIG.isMultiPage
+  ? [
+      { label: 'Trang nhất', href: withBase('/') },
+      { label: 'Chuyên mục', href: withBase('/chuyen-muc/') },
+      { label: 'Kho bài', href: withBase('/bai-viet/') },
+      ...extraCollectionNav,
+      { label: 'Lưu trữ', href: withBase('/luu-tru/') },
+      { label: 'Giới thiệu', href: withBase('/gioi-thieu/') },
+    ]
+  : [
+      { label: 'Trang nhất', href: withBase('/') },
+      { label: 'Kho bài viết', href: withBase('/bai-viet/') },
+      ...extraCollectionNav,
+    ];
+
+const drawerExtraNav = SITE_CONFIG.isMultiPage
+  ? [
+      { label: 'Chủ đề (#Tags)', href: withBase('/chu-de/') },
+      { label: 'Liên hệ & Chat', href: withBase('/lien-he/') },
+    ]
+  : [];
 ---
 
 <!doctype html>
@@ -74,9 +188,14 @@ const mainNav = [
     {noindex && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
 
-    <script is:inline define:vars={{ defaultMode: initialMode }}>
+    <script is:inline define:vars={{ defaultMode: initialMode, defaultSig: defaultThemeSig }}>
       (function () {
         try {
+          var prevSig = localStorage.getItem('daoky_theme_default_sig');
+          if (prevSig !== defaultSig) {
+            localStorage.setItem('daoky_theme_default_sig', defaultSig);
+            localStorage.setItem('daoky_theme_mode', defaultMode);
+          }
           var saved = localStorage.getItem('daoky_theme_mode');
           var mode = saved === 'dark' || saved === 'light' ? saved : defaultMode;
           document.documentElement.setAttribute('data-mode', mode);
@@ -84,6 +203,27 @@ const mainNav = [
         } catch (e) {}
       })();
     </script>
+
+    {analyticsProvider === 'ga4' && analyticsId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(analyticsId)}`}></script>
+        <script is:inline define:vars={{ gaId: analyticsId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
+    {analyticsProvider === 'cloudflare' && analyticsId && (
+      <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: analyticsId })}></script>
+    )}
+    {analyticsProvider === 'plausible' && analyticsId && (
+      <script defer data-domain={analyticsId} src="https://plausible.io/js/script.js"></script>
+    )}
+    {analyticsProvider === 'umami' && analyticsId && (
+      <script defer src="https://cloud.umami.is/script.js" data-website-id={analyticsId}></script>
+    )}
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
@@ -103,9 +243,10 @@ const mainNav = [
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    {customColorCss && <style is:inline set:html={customColorCss} />}
   </head>
   <body data-template={SITE_CONFIG.templateStyle}>
     <header class="site-header">
@@ -119,7 +260,7 @@ const mainNav = [
           {mainNav.map((item) => (
             <a
               href={item.href}
-              class={currentPath === item.href ? 'active' : ''}
+              class={isNavActive(item.href) ? 'active' : ''}
             >
               {item.label}
             </a>
@@ -165,6 +306,9 @@ const mainNav = [
           {mainNav.map((item) => (
             <a href={item.href}>{item.label}</a>
           ))}
+          {drawerExtraNav.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))}
           {SITE_CONFIG.headerNavLinks.map((link) => (
             <a href={withBase(link.url)}>{link.label}</a>
           ))}
@@ -183,7 +327,17 @@ const mainNav = [
           <p class="footer-sub">Tác giả: {SITE_CONFIG.authorName}</p>
         </div>
         <div class="footer-links">
-          <a href={withBase('/bai-viet/')}>Kho bài viết</a>
+          {SITE_CONFIG.isMultiPage ? (
+            <>
+              <a href={withBase('/chuyen-muc/')}>Chuyên mục</a>
+              <a href={withBase('/chu-de/')}>Chủ đề</a>
+              <a href={withBase('/luu-tru/')}>Lưu trữ</a>
+              <a href={withBase('/gioi-thieu/')}>Giới thiệu</a>
+              <a href={withBase('/lien-he/')}>Liên hệ</a>
+            </>
+          ) : (
+            <a href={withBase('/bai-viet/')}>Kho bài viết</a>
+          )}
           <a href={withBase('/rss.xml')}>RSS</a>
           {SITE_CONFIG.footerLinks.map((link) => (
             <a
@@ -271,6 +425,13 @@ const mainNav = [
           try {
             localStorage.setItem('daoky_theme_mode', next);
           } catch (e) {}
+          const giscusFrame = document.querySelector('iframe.giscus-frame');
+          if (giscusFrame && giscusFrame.contentWindow) {
+            giscusFrame.contentWindow.postMessage(
+              { giscus: { setConfig: { theme: next } } },
+              'https://giscus.app'
+            );
+          }
         });
       }
       const mBtn = document.getElementById('mobileMenuBtn');
@@ -295,22 +456,94 @@ const mainNav = [
           });
         }
       }
+
+      document.querySelectorAll('.prose pre').forEach((preEl) => {
+        if (preEl.classList.contains('mermaid')) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'dk-copy-btn';
+        btn.textContent = 'Sao chép';
+        btn.addEventListener('click', () => {
+          const codeEl = preEl.querySelector('code');
+          const txt = codeEl ? codeEl.textContent || '' : preEl.textContent || '';
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(txt).then(() => {
+              btn.textContent = 'Đã chép';
+              window.setTimeout(() => {
+                btn.textContent = 'Sao chép';
+              }, 1600);
+            }).catch(() => {});
+          }
+        });
+        preEl.appendChild(btn);
+      });
+
+      const proseBlocks = document.querySelectorAll('.prose');
+      let needsKatex = false;
+      proseBlocks.forEach((el) => {
+        if (el.textContent && el.textContent.includes('$')) {
+          needsKatex = true;
+        }
+      });
+      if (needsKatex) {
+        const kCss = document.createElement('link');
+        kCss.rel = 'stylesheet';
+        kCss.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+        document.head.appendChild(kCss);
+        const kJs = document.createElement('script');
+        kJs.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js';
+        kJs.onload = () => {
+          const kAuto = document.createElement('script');
+          kAuto.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js';
+          kAuto.onload = () => {
+            if (typeof window.renderMathInElement === 'function') {
+              proseBlocks.forEach((el) => {
+                window.renderMathInElement(el, {
+                  delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '$', right: '$', display: false },
+                  ],
+                  throwOnError: false,
+                });
+              });
+            }
+          };
+          document.head.appendChild(kAuto);
+        };
+        document.head.appendChild(kJs);
+      }
+
+      if (document.querySelectorAll('.mermaid').length > 0) {
+        const mScript = document.createElement('script');
+        mScript.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+        mScript.onload = () => {
+          if (window.mermaid) {
+            const isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark';
+            window.mermaid.initialize({
+              startOnLoad: false,
+              theme: isDarkMode ? 'dark' : 'default',
+            });
+            window.mermaid.run();
+          }
+        };
+        document.head.appendChild(mScript);
+      }
     </script>
   </body>
 </html>
 
 <style is:global>
   :root {
-    --bg: #161210;
-    --surface: #201A17;
-    --card: #29221E;
-    --border: #3B312B;
-    --text: #F5EFE6;
-    --text-2: #D6CBC0;
-    --muted: #A39589;
-    --accent: #E5A93C;
-    --accent-text: #161210;
-    --link: #FBBF24;
+    --bg: #0E1512;
+    --surface: #16211C;
+    --card: #242E2A;
+    --border: #3A433F;
+    --text: #ECFDF5;
+    --text-2: #BBCAC3;
+    --muted: #88958F;
+    --accent: #34D399;
+    --accent-text: #111216;
+    --link: #6EE7B7;
     --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
     --font-body: 'Lora', Georgia, serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -466,6 +699,156 @@ const mainNav = [
     --font-body: 'Lora', Georgia, serif;
   }
 
+  html[data-mode='light'] body[data-template='monocle-magazine'] {
+    --bg: #F8F6F0;
+    --surface: #EFECE3;
+    --card: #FFFFFF;
+    --border: #D7D0C3;
+    --text: #1A1D1A;
+    --text-2: #3D423D;
+    --muted: #676E66;
+    --accent: #14532D;
+    --accent-text: #F8F6F0;
+    --link: #166534;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='dark'] body[data-template='monocle-magazine'] {
+    --bg: #111613;
+    --surface: #19211C;
+    --card: #212B25;
+    --border: #2E3B33;
+    --text: #F2F4F1;
+    --text-2: #CED6CF;
+    --muted: #92A096;
+    --accent: #86EFAC;
+    --accent-text: #0F1A14;
+    --link: #4ADE80;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='light'] body[data-template='guardian-portal'] {
+    --bg: #FFFFFF;
+    --surface: #F3F5F8;
+    --card: #FFFFFF;
+    --border: #D5DCE6;
+    --text: #121826;
+    --text-2: #334155;
+    --muted: #64748B;
+    --accent: #0B2A5B;
+    --accent-text: #FFFFFF;
+    --link: #B91C1C;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='dark'] body[data-template='guardian-portal'] {
+    --bg: #0B111E;
+    --surface: #131C2E;
+    --card: #1A253B;
+    --border: #293754;
+    --text: #F8FAFC;
+    --text-2: #CBD5E1;
+    --muted: #94A3B8;
+    --accent: #38BDF8;
+    --accent-text: #081221;
+    --link: #F87171;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='light'] body[data-template='kyoto-folio'] {
+    --bg: #FBF9F5;
+    --surface: #F0ECE4;
+    --card: #FFFFFF;
+    --border: #DCD4C8;
+    --text: #1C1917;
+    --text-2: #44403C;
+    --muted: #78716C;
+    --accent: #9A3412;
+    --accent-text: #FBF9F5;
+    --link: #9A3412;
+    --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  html[data-mode='dark'] body[data-template='kyoto-folio'] {
+    --bg: #161412;
+    --surface: #211D1A;
+    --card: #2A2521;
+    --border: #3C352F;
+    --text: #F5F2ED;
+    --text-2: #D6D0C8;
+    --muted: #A8A29E;
+    --accent: #FDBA74;
+    --accent-text: #1C140F;
+    --link: #FB923C;
+    --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  html[data-mode='light'] body[data-template='economist-digest'] {
+    --bg: #F7F8FA;
+    --surface: #ECEEF3;
+    --card: #FFFFFF;
+    --border: #D1D5DB;
+    --text: #111827;
+    --text-2: #374151;
+    --muted: #6B7280;
+    --accent: #B91C1C;
+    --accent-text: #FFFFFF;
+    --link: #B91C1C;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='dark'] body[data-template='economist-digest'] {
+    --bg: #101218;
+    --surface: #181B24;
+    --card: #202430;
+    --border: #2E3445;
+    --text: #F3F4F6;
+    --text-2: #D1D5DB;
+    --muted: #9CA3AF;
+    --accent: #E11D48;
+    --accent-text: #FFFFFF;
+    --link: #FB7185;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  html[data-mode='light'] body[data-template='nordic-atlas'] {
+    --bg: #F2F6F7;
+    --surface: #E4ECEE;
+    --card: #FFFFFF;
+    --border: #C6D4D8;
+    --text: #0F1C21;
+    --text-2: #2D4249;
+    --muted: #5C737B;
+    --accent: #0F766E;
+    --accent-text: #FFFFFF;
+    --link: #0F766E;
+    --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
+  html[data-mode='dark'] body[data-template='nordic-atlas'] {
+    --bg: #0D1317;
+    --surface: #141E24;
+    --card: #1B2830;
+    --border: #293B46;
+    --text: #EDF2F4;
+    --text-2: #C5D3D9;
+    --muted: #889DA6;
+    --accent: #2DD4BF;
+    --accent-text: #0A1416;
+    --link: #2DD4BF;
+    --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-body: 'Lora', Georgia, serif;
+  }
+
   * {
     box-sizing: border-box;
   }
@@ -474,6 +857,7 @@ const mainNav = [
   body {
     margin: 0;
     padding: 0;
+    min-height: 100%;
     overflow-x: hidden;
     background: var(--bg);
     color: var(--text);
@@ -518,6 +902,12 @@ const mainNav = [
     border-bottom: 3px double var(--border);
   }
 
+  body[data-template='monocle-magazine'] .site-header,
+  body[data-template='guardian-portal'] .site-header,
+  body[data-template='economist-digest'] .site-header {
+    border-top: 3px solid var(--accent);
+  }
+
   .nav-inner {
     display: flex;
     align-items: center;
@@ -555,8 +945,8 @@ const mainNav = [
   .nav-links {
     display: none;
     align-items: center;
-    gap: 22px;
-    font-size: 0.9rem;
+    gap: 18px;
+    font-size: 0.88rem;
     font-weight: 500;
   }
 
@@ -564,12 +954,18 @@ const mainNav = [
     color: var(--text-2);
     text-decoration: none;
     white-space: nowrap;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
   }
 
   .nav-links a:hover,
   .nav-links a.active {
     color: var(--text);
     font-weight: 600;
+  }
+
+  .nav-links a.active {
+    border-bottom-color: var(--accent);
   }
 
   .nav-actions {
@@ -649,7 +1045,7 @@ const mainNav = [
     padding: 6px 0;
   }
 
-  @media (min-width: 820px) {
+  @media (min-width: 880px) {
     .nav-links {
       display: flex;
     }
@@ -711,7 +1107,8 @@ const mainNav = [
   }
 
   body[data-template='newyorker-light'] .prose > p:first-of-type::first-letter,
-  body[data-template='espresso-salon'] .prose > p:first-of-type::first-letter {
+  body[data-template='espresso-salon'] .prose > p:first-of-type::first-letter,
+  body[data-template='kyoto-folio'] .prose > p:first-of-type::first-letter {
     float: left;
     font-family: var(--font-display);
     font-size: 3.4rem;
@@ -755,21 +1152,105 @@ const mainNav = [
   }
 
   .prose pre {
-    padding: 1rem;
+    position: relative;
+    padding: 1.1rem;
+    padding-top: 2.3rem;
     border-radius: 10px;
-    overflow-x: auto;
-    background: var(--surface);
     border: 1px solid var(--border);
+    background: var(--surface);
+    overflow-x: auto;
     font-family: var(--font-mono);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+
+  .dk-copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .dk-copy-btn:hover {
+    color: var(--text);
+    border-color: var(--link);
+  }
+
+  .dk-callout {
+    margin: 1.5rem 0;
+    padding: 0.95rem 1.15rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface);
+  }
+
+  .dk-callout-title {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--link);
+    margin-bottom: 6px;
+  }
+
+  .dk-callout-tip { border-left-color: #16a34a; }
+  .dk-callout-tip .dk-callout-title { color: #16a34a; }
+  .dk-callout-warning, .dk-callout-caution { border-left-color: #d97706; }
+  .dk-callout-warning .dk-callout-title, .dk-callout-caution .dk-callout-title { color: #d97706; }
+  .dk-callout-important { border-left-color: #dc2626; }
+  .dk-callout-important .dk-callout-title { color: #dc2626; }
+
+  .dk-video-embed {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin: 1.6rem 0;
+    background: #000;
+  }
+
+  .dk-video-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .dk-mermaid-box {
+    margin: 1.6rem 0;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow-x: auto;
+  }
+
+  .dk-mermaid-box pre.mermaid {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    text-align: center;
   }
 
   .prose code {
     font-family: var(--font-mono);
     font-size: 0.88em;
-    background: var(--surface);
     padding: 0.15em 0.4em;
     border-radius: 5px;
+    background: var(--surface);
   }
 
   .prose pre code {
@@ -792,21 +1273,21 @@ const mainNav = [
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    min-height: 44px;
-    padding: 0 16px;
-    border-radius: 999px;
+    height: 46px;
+    padding: 0 18px;
+    border-radius: 9999px;
     border: 1px solid var(--border);
     background: var(--accent);
     color: var(--accent-text);
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   }
 
   .livechat-panel {
-    width: min(320px, calc(100vw - 36px));
+    width: min(320px, calc(100vw - 32px));
     border-radius: 14px;
     border: 1px solid var(--border);
     background: var(--card);
