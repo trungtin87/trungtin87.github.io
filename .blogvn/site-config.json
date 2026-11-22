@@ -8,8 +8,24 @@
   "footerLinks": [],
   "authorName": "Huyền Không",
   "authorAvatar": "https://avatars.githubusercontent.com/u/23460916?v=4",
-  "themeMode": "dark",
-  "astroTemplate": "nordic-atlas",
+  "themeMode": "light",
+  "astroTemplate": "newyorker-light",
+  "themeColors": {
+    "light": {
+      "canvas": "#F7FAF8",
+      "surface": "#EAF2ED",
+      "textPrimary": "#122119",
+      "accent": "#14532D",
+      "link": "#15803D"
+    },
+    "dark": {
+      "canvas": "#0E1512",
+      "surface": "#16211C",
+      "textPrimary": "#ECFDF5",
+      "accent": "#34D399",
+      "link": "#6EE7B7"
+    }
+  },
   "liveChat": {
     "enabled": false,
     "title": "Trò chuyện với tác giả",
