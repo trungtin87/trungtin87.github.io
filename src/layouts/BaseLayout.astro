@@ -93,6 +93,10 @@ function buildCustomColorCss(): string {
   return blocks.join('\n');
 }
 const customColorCss = buildCustomColorCss();
+const activeTplColors = BASE_TEMPLATE_COLORS[SITE_CONFIG.templateStyle] || BASE_TEMPLATE_COLORS['newyorker-light'];
+const lightBgColor = cleanHex(SITE_CONFIG.themeColors?.light?.canvas) || activeTplColors.light.bg;
+const darkBgColor = cleanHex(SITE_CONFIG.themeColors?.dark?.canvas) || activeTplColors.dark.bg;
+const initialBgColor = initialDark ? darkBgColor : lightBgColor;
 
 const analyticsProvider = SITE_CONFIG.analyticsProvider || 'none';
 const analyticsId = (SITE_CONFIG.analyticsId || '').trim();
@@ -183,12 +187,14 @@ const drawerExtraNav = SITE_CONFIG.isMultiPage
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" id="dk-theme-color" content={initialBgColor} />
+    <meta name="color-scheme" content="light dark" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
 
-    <script is:inline define:vars={{ defaultMode: initialMode, defaultSig: defaultThemeSig }}>
+    <script is:inline define:vars={{ defaultMode: initialMode, defaultSig: defaultThemeSig, lightBgColor, darkBgColor }}>
       (function () {
         try {
           var prevSig = localStorage.getItem('daoky_theme_default_sig');
@@ -200,6 +206,11 @@ const drawerExtraNav = SITE_CONFIG.isMultiPage
           var mode = saved === 'dark' || saved === 'light' ? saved : defaultMode;
           document.documentElement.setAttribute('data-mode', mode);
           document.documentElement.classList.toggle('dark', mode === 'dark');
+          document.documentElement.style.colorScheme = mode;
+          var metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) {
+            metaTheme.setAttribute('content', mode === 'dark' ? darkBgColor : lightBgColor);
+          }
         } catch (e) {}
       })();
     </script>
@@ -414,7 +425,7 @@ const drawerExtraNav = SITE_CONFIG.isMultiPage
       </script>
     )}
 
-    <script is:inline>
+    <script is:inline define:vars={{ lightBgColor, darkBgColor }}>
       const themeBtn = document.getElementById('themeToggleBtn');
       if (themeBtn) {
         themeBtn.addEventListener('click', () => {
@@ -422,6 +433,11 @@ const drawerExtraNav = SITE_CONFIG.isMultiPage
           const next = cur === 'dark' ? 'light' : 'dark';
           document.documentElement.setAttribute('data-mode', next);
           document.documentElement.classList.toggle('dark', next === 'dark');
+          document.documentElement.style.colorScheme = next;
+          const metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) {
+            metaTheme.setAttribute('content', next === 'dark' ? darkBgColor : lightBgColor);
+          }
           try {
             localStorage.setItem('daoky_theme_mode', next);
           } catch (e) {}
@@ -534,16 +550,16 @@ const drawerExtraNav = SITE_CONFIG.isMultiPage
 
 <style is:global>
   :root {
-    --bg: #0E1512;
-    --surface: #16211C;
-    --card: #242E2A;
-    --border: #3A433F;
-    --text: #ECFDF5;
-    --text-2: #BBCAC3;
-    --muted: #88958F;
-    --accent: #34D399;
+    --bg: #0D1317;
+    --surface: #141E24;
+    --card: #222C31;
+    --border: #3A4043;
+    --text: #EDF2F4;
+    --text-2: #BCC1C3;
+    --muted: #888E91;
+    --accent: #2DD4BF;
     --accent-text: #111216;
-    --link: #6EE7B7;
+    --link: #5EEAD4;
     --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
     --font-body: 'Lora', Georgia, serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;

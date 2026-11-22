@@ -1,11 +1,11 @@
 {
-  "name": "Đạo ký của một phàm nhân",
-  "short_name": "Đạo Ký",
-  "description": "Nhật ký nghiên cứu kỹ thuật, thiết kế hệ thống và những ghi chép tĩnh tại trên GitHub Pages.",
+  "name": "Bùi Gia Trang",
+  "short_name": "Huyền Không Thư Quán",
+  "description": "Tìm hiểu sự Huyền diệu của cái Không",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#161210",
-  "theme_color": "#E5A93C",
+  "background_color": "#0D1317",
+  "theme_color": "#0D1317",
   "icons": [
     {
       "src": "./favicon.png",

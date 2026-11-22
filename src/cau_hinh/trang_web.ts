@@ -86,18 +86,18 @@ export const SITE_CONFIG: SiteIdentityConfig = {
   "templateStyle": "newyorker-light",
   "themeColors": {
     "light": {
-      "canvas": "#F7FAF8",
-      "surface": "#EAF2ED",
-      "textPrimary": "#122119",
-      "accent": "#14532D",
-      "link": "#15803D"
+      "canvas": "#F2F6F7",
+      "surface": "#E4ECEE",
+      "textPrimary": "#0F1C21",
+      "accent": "#0F766E",
+      "link": "#0D9488"
     },
     "dark": {
-      "canvas": "#0E1512",
-      "surface": "#16211C",
-      "textPrimary": "#ECFDF5",
-      "accent": "#34D399",
-      "link": "#6EE7B7"
+      "canvas": "#0D1317",
+      "surface": "#141E24",
+      "textPrimary": "#EDF2F4",
+      "accent": "#2DD4BF",
+      "link": "#5EEAD4"
     }
   },
   "isMultiPage": false,
