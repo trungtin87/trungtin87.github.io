@@ -9,7 +9,7 @@
   "authorName": "Huyền Không",
   "authorAvatar": "https://avatars.githubusercontent.com/u/23460916?v=4",
   "themeMode": "dark",
-  "astroTemplate": "espresso-salon",
+  "astroTemplate": "newyorker-light",
   "themeColors": {
     "light": {
       "canvas": "#F7FAF8",

@@ -83,7 +83,7 @@ export const SITE_CONFIG: SiteIdentityConfig = {
   "authorName": "Huyền Không",
   "authorBio": "Tác giả blog cá nhân chia sẻ bài viết, quan điểm và ghi chép dài hạn.",
   "themeMode": "dark",
-  "templateStyle": "espresso-salon",
+  "templateStyle": "newyorker-light",
   "themeColors": {
     "light": {
       "canvas": "#F7FAF8",
