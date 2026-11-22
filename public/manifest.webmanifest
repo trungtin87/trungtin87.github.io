@@ -5,8 +5,8 @@
   "description": "Tìm hiểu sự Huyền diệu của cái Không",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#161411",
-  "theme_color": "#161411",
+  "background_color": "#0D1317",
+  "theme_color": "#0D1317",
   "icons": [
     {
       "src": "./favicon.png",
