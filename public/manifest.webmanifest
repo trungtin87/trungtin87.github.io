@@ -1,11 +1,12 @@
 {
+  "id": "./",
   "name": "Bùi Gia Trang",
   "short_name": "Huyền Không Thư Quán",
   "description": "Tìm hiểu sự Huyền diệu của cái Không",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0D1317",
-  "theme_color": "#0D1317",
+  "background_color": "#0E1512",
+  "theme_color": "#0E1512",
   "icons": [
     {
       "src": "./favicon.png",
