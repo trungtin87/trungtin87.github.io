@@ -8,7 +8,7 @@ tags:
   - github-pages
 mo_ta: test nè
 ngay: '2026-11-23'
-anh_bia: /tainguyen/hinhanh/og-default.svg
+anh_bia: /tainguyen/hinhanh/uploads/20261123-6c7d8634b1e665c3676e7acd8cf5ae00-w3zras.webp
 nhap: false
 ---
 
