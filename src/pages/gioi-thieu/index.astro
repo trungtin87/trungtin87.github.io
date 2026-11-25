@@ -1,0 +1,159 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../../cau_hinh/trang_web';
+import { getPostCategory, withBase } from '../../utils/url';
+
+const entries = (await getCollection('bai_viet')).filter((e) => !e.data.nhap && !e.data.draft);
+const categoryCount = new Set(entries.map((e) => getPostCategory(e))).size;
+const iconHref = withBase(SITE_CONFIG.siteIcon || '/favicon.svg');
+---
+
+<BaseLayout title="Giới thiệu" description={`Giới thiệu về ${SITE_CONFIG.siteTitle} và tác giả ${SITE_CONFIG.authorName}.`}>
+  <article class="about-wrap">
+    <header class="about-hero">
+      <img class="about-logo" src={iconHref} alt={SITE_CONFIG.siteTitle} width="64" height="64" />
+      <div>
+        <p class="page-kicker">Giới thiệu ấn phẩm & Tác giả</p>
+        <h1>{SITE_CONFIG.siteTitle}</h1>
+        <p class="about-tagline">{SITE_CONFIG.tagline}</p>
+      </div>
+    </header>
+
+    <section class="about-stats">
+      <div class="stat-box">
+        <span class="stat-val">{entries.length}</span>
+        <span class="stat-lbl">Bài viết xuất bản</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val">{categoryCount}</span>
+        <span class="stat-lbl">Chuyên mục độc lập</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val">{SITE_CONFIG.authorName}</span>
+        <span class="stat-lbl">Chủ bút</span>
+      </div>
+    </section>
+
+    <section class="about-body prose">
+      <h2>Về người viết</h2>
+      <p>{SITE_CONFIG.authorBio}</p>
+      <h2>Tôn chỉ xuất bản</h2>
+      <p>
+        <strong>{SITE_CONFIG.siteTitle}</strong> được xây dựng trên nền tảng tệp văn bản thuần Markdown
+        và bộ khung tĩnh Astro 5, hướng tới sự bền vững và tốc độ đọc tức thì.
+        Mọi bài viết đều thuộc toàn quyền sở hữu của tác giả, tối ưu trải nghiệm đọc lâu dài ở cả hai chế độ Sáng và Tối.
+      </p>
+    </section>
+
+    <div class="about-actions">
+      <a class="btn-primary" href={withBase('/bai-viet/')}>Khám phá kho bài viết</a>
+      <a class="btn-secondary" href={withBase('/lien-he/')}>Kết nối & Liên hệ</a>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .about-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  .about-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  @media (min-width: 640px) {
+    .about-hero {
+      flex-direction: row;
+      align-items: center;
+      gap: 22px;
+    }
+  }
+  .about-logo {
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    object-fit: cover;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .page-kicker {
+    margin: 0 0 6px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--link);
+  }
+  .about-hero h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+  }
+  .about-tagline {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 1.02rem;
+  }
+  .about-stats {
+    margin: 24px 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 600px) {
+    .about-stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .stat-box {
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .stat-lbl {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .about-actions {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .btn-primary,
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+  .btn-secondary {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+</style>

@@ -3,19 +3,16 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { SITE_CONFIG } from '../../cau_hinh/trang_web';
-import { getPostDate } from '../../utils/url';
+import { getPostCategory, getPostDate } from '../../utils/url';
 
 const entries = (await getCollection('bai_viet'))
   .filter((e) => !e.data.nhap && !e.data.draft)
   .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
 
 const categories = Array.from(
-  new Set(
-    entries
-      .map((e) => String(e.data?.danh_muc || e.data?.category || 'Bài viết').trim())
-      .filter(Boolean)
-  )
+  new Set(entries.map((e) => getPostCategory(e)).filter(Boolean))
 );
+const pageSize = SITE_CONFIG.isMultiPage ? 4 : 24;
 ---
 
 <BaseLayout title="Kho bài viết" description="Toàn bộ bài viết, tiểu luận và ghi chép trên blog.">
@@ -52,7 +49,7 @@ const categories = Array.from(
       {entries.map((entry) => (
         <div
           class="archive-item"
-          data-cat={String(entry.data?.danh_muc || entry.data?.category || 'Bài viết').trim().toLowerCase()}
+          data-cat={getPostCategory(entry).toLowerCase()}
         >
           <PostCard entry={entry} />
         </div>
@@ -60,47 +57,94 @@ const categories = Array.from(
     </div>
   )}
   <p id="archiveEmptyMsg" class="empty-archive hidden">Không có bài viết nào khớp bộ lọc hiện tại.</p>
+  <nav id="archivePagination" class="pagination-bar hidden" aria-label="Phân trang kho bài viết"></nav>
 
-  <script is:inline>
+  <script is:inline define:vars={{ pageSize }}>
     const archiveInput = document.getElementById('archiveSearchInput');
     const archiveCatBar = document.getElementById('archiveCatBar');
     const archiveGrid = document.getElementById('archiveGrid');
     const archiveEmpty = document.getElementById('archiveEmptyMsg');
+    const paginationBar = document.getElementById('archivePagination');
     let currentCat = 'all';
+    let currentPage = 1;
 
-    function filterArchive() {
+    function renderArchive() {
       if (!archiveGrid) return;
       const q = (archiveInput ? archiveInput.value : '').trim().toLowerCase();
-      const items = archiveGrid.querySelectorAll('.archive-item');
-      let shown = 0;
+      const items = Array.from(archiveGrid.querySelectorAll('.archive-item'));
+      const matched = [];
+
       items.forEach((item) => {
         const cat = item.getAttribute('data-cat') || '';
         const card = item.querySelector('.post-card');
         const txt = card ? (card.getAttribute('data-search') || '') : '';
         const okCat = currentCat === 'all' || cat === currentCat;
         const okSearch = !q || txt.includes(q);
-        const visible = okCat && okSearch;
-        item.style.display = visible ? '' : 'none';
-        if (visible) shown++;
+        if (okCat && okSearch) {
+          matched.push(item);
+        } else {
+          item.style.display = 'none';
+        }
       });
+
+      const totalPages = Math.max(1, Math.ceil(matched.length / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+
+      matched.forEach((item, idx) => {
+        item.style.display = idx >= start && idx < end ? '' : 'none';
+      });
+
       if (archiveEmpty) {
-        archiveEmpty.classList.toggle('hidden', shown > 0);
+        archiveEmpty.classList.toggle('hidden', matched.length > 0);
+      }
+
+      if (paginationBar) {
+        if (totalPages <= 1) {
+          paginationBar.classList.add('hidden');
+          paginationBar.innerHTML = '';
+        } else {
+          paginationBar.classList.remove('hidden');
+          let html = '';
+          html += '<button type="button" class="page-btn" data-page="' + (currentPage - 1) + '"' + (currentPage <= 1 ? ' disabled' : '') + '>← Trước</button>';
+          for (let p = 1; p <= totalPages; p++) {
+            html += '<button type="button" class="page-btn' + (p === currentPage ? ' active' : '') + '" data-page="' + p + '">' + p + '</button>';
+          }
+          html += '<button type="button" class="page-btn" data-page="' + (currentPage + 1) + '"' + (currentPage >= totalPages ? ' disabled' : '') + '>Sau →</button>';
+          paginationBar.innerHTML = html;
+          paginationBar.querySelectorAll('.page-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const next = Number(btn.getAttribute('data-page') || '1');
+              if (!Number.isNaN(next) && next >= 1 && next <= totalPages) {
+                currentPage = next;
+                renderArchive();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            });
+          });
+        }
       }
     }
 
     if (archiveInput) {
-      archiveInput.addEventListener('input', filterArchive);
+      archiveInput.addEventListener('input', () => {
+        currentPage = 1;
+        renderArchive();
+      });
     }
     if (archiveCatBar) {
       archiveCatBar.querySelectorAll('.cat-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           currentCat = btn.getAttribute('data-cat') || 'all';
+          currentPage = 1;
           archiveCatBar.querySelectorAll('.cat-btn').forEach((b) => b.classList.remove('active'));
           btn.classList.add('active');
-          filterArchive();
+          renderArchive();
         });
       });
     }
+    renderArchive();
   </script>
 </BaseLayout>
 
@@ -182,9 +226,46 @@ const categories = Array.from(
   @media (min-width: 1024px) {
     .col-grid.template-nytimes-light,
     .col-grid.template-obsidian-broadsheet,
-    .col-grid.template-bbc-dark {
+    .col-grid.template-bbc-dark,
+    .col-grid.template-monocle-magazine,
+    .col-grid.template-guardian-portal,
+    .col-grid.template-economist-digest,
+    .col-grid.template-nordic-atlas {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+  }
+  .pagination-bar {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .pagination-bar :global(.page-btn) {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pagination-bar :global(.page-btn.active) {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .pagination-bar :global(.page-btn:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
   .empty-archive {
     color: var(--muted);

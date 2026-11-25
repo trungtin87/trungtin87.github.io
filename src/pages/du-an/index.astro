@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPostCover, getPostDate, getPostExcerpt, getPostSlug, getPostTitle, withBase } from '../../utils/url';
+
+let entries: any[] = [];
+try {
+  entries = (await getCollection('du_an'))
+    .filter((e) => !e.data.nhap && !e.data.draft)
+    .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+} catch {}
+---
+
+<BaseLayout title="Dự án" description="Danh sách dự án phần mềm và sản phẩm sáng tạo.">
+  <header class="page-head">
+    <p class="page-kicker">Hồ sơ công việc</p>
+    <h1>Dự án đã thực hiện</h1>
+    <p class="page-sub">Tổng hợp các dự án kỹ thuật, công cụ nguồn mở và sản phẩm cá nhân.</p>
+  </header>
+
+  {entries.length === 0 ? (
+    <p class="empty-msg">Chưa có dự án nào được xuất bản.</p>
+  ) : (
+    <div class="col-grid">
+      {entries.map((entry) => {
+        const slug = getPostSlug(entry);
+        const title = getPostTitle(entry);
+        const excerpt = getPostExcerpt(entry);
+        const cover = getPostCover(entry);
+        const techs = Array.isArray(entry.data?.cong_nghe)
+          ? entry.data.cong_nghe
+          : Array.isArray(entry.data?.tags)
+          ? entry.data.tags
+          : [];
+        return (
+          <article class="proj-card">
+            {cover && (
+              <a href={withBase(`/du-an/${slug}/`) } class="proj-cover">
+                <img src={cover} alt={title} loading="lazy" />
+              </a>
+            )}
+            <div class="proj-body">
+              <h2><a href={withBase(`/du-an/${slug}/`) }>{title}</a></h2>
+              {excerpt && <p>{excerpt}</p>}
+              {techs.length > 0 && (
+                <div class="tech-list">
+                  {techs.slice(0, 5).map((t: string) => <span>{t}</span>)}
+                </div>
+              )}
+              <div class="proj-actions">
+                <a class="btn-main" href={withBase(`/du-an/${slug}/`) }>Chi tiết →</a>
+                {entry.data?.link_demo && (
+                  <a class="btn-sub" href={entry.data.link_demo} target="_blank" rel="noreferrer">Demo ↗</a>
+                )}
+                {entry.data?.link_github && (
+                  <a class="btn-sub" href={entry.data.link_github} target="_blank" rel="noreferrer">GitHub ↗</a>
+                )}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .page-head { padding-bottom: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .page-kicker { margin: 0 0 8px; font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--link); }
+  .page-head h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: 2rem; }
+  .page-sub, .empty-msg { color: var(--text-2); margin: 0; }
+  .col-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 760px) { .col-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .proj-card { border: 1px solid var(--border); border-radius: 12px; background: var(--card); overflow: hidden; display: flex; flex-direction: column; }
+  .proj-cover { aspect-ratio: 16/9; display: block; overflow: hidden; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .proj-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .proj-body { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .proj-body h2 { margin: 0; font-family: var(--font-display); font-size: 1.3rem; }
+  .proj-body h2 a { color: var(--text); }
+  .proj-body p { margin: 0; font-size: 0.92rem; color: var(--text-2); }
+  .tech-list { display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--link); }
+  .tech-list span { padding: 2px 8px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); }
+  .proj-actions { margin-top: auto; padding-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn-main, .btn-sub { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; text-decoration: none !important; }
+  .btn-main { background: var(--accent); color: var(--accent-text); }
+  .btn-sub { border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+</style>

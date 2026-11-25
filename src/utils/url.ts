@@ -7,6 +7,17 @@ export function withBase(path = '/'): string {
   return `${cleanBase}${cleanPath}` || '/';
 }
 
+export function slugifyVi(raw = ''): string {
+  const s = String(raw || '')
+    .replace(/[đĐ]/g, 'd')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return s || 'muc';
+}
+
 export function getPostSlug(entry: { id: string; data?: Record<string, any> }): string {
   const raw = entry.data?.slug || entry.id || 'bai-viet';
   return String(raw).replace(/\.mdx?$/i, '').split('/').pop() || 'bai-viet';
@@ -19,6 +30,26 @@ export function getPostTitle(entry: { id: string; data?: Record<string, any> }):
       entry.id ||
       'Chưa đặt tiêu đề'
   );
+}
+
+export function getPostCategory(entry: { data?: Record<string, any> }): string {
+  const raw = entry.data?.danh_muc;
+  if (Array.isArray(raw) && raw.length > 0) return String(raw[0]).trim() || 'Bài viết';
+  if (typeof raw === 'string' && raw.trim()) return raw.trim();
+  const cat = entry.data?.category;
+  if (typeof cat === 'string' && cat.trim()) return cat.trim();
+  return 'Bài viết';
+}
+
+export function getPostCategorySlug(entry: { data?: Record<string, any> }): string {
+  const explicit = typeof entry.data?.chuyen_muc === 'string' ? entry.data.chuyen_muc.trim() : '';
+  return slugifyVi(explicit || getPostCategory(entry));
+}
+
+export function getPostTags(entry: { data?: Record<string, any> }): string[] {
+  const raw = entry.data?.tags;
+  if (!Array.isArray(raw)) return [];
+  return raw.map((t) => String(t).trim()).filter(Boolean);
 }
 
 export function getPostDate(entry: { data?: Record<string, any> }): string {

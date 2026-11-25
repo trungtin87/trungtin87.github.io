@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPostCover, getPostDate, getPostExcerpt, getPostTitle } from '../../utils/url';
+
+let entries: any[] = [];
+try {
+  entries = (await getCollection('sach'))
+    .filter((e) => !e.data.nhap && !e.data.draft)
+    .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+} catch {}
+---
+
+<BaseLayout title="Tủ sách & Ebook" description="Danh mục sách và tài liệu chuyên sâu.">
+  <header class="page-head">
+    <p class="page-kicker">Ấn phẩm &amp; Đọc sách</p>
+    <h1>Tủ sách &amp; Ebook</h1>
+    <p class="page-sub">Những cuốn sách biên soạn và tài liệu lưu trữ.</p>
+  </header>
+
+  {entries.length === 0 ? (
+    <p class="empty-msg">Chưa có đầu sách nào được xuất bản.</p>
+  ) : (
+    <div class="book-grid">
+      {entries.map((entry) => {
+        const title = getPostTitle(entry);
+        const excerpt = getPostExcerpt(entry);
+        const cover = getPostCover(entry);
+        const formats = Array.isArray(entry.data?.dinh_dang) ? entry.data.dinh_dang : [];
+        return (
+          <article class="book-card">
+            {cover && (
+              <div class="book-cover"><img src={cover} alt={title} loading="lazy" /></div>
+            )}
+            <div class="book-body">
+              <h2>{title}</h2>
+              {entry.data?.tac_gia && <div class="book-author">Tác giả: {entry.data.tac_gia}</div>}
+              {excerpt && <p>{excerpt}</p>}
+              {formats.length > 0 && (
+                <div class="book-meta">{formats.join(' · ')}</div>
+              )}
+              {entry.data?.link_mua && (
+                <a class="book-btn" href={entry.data.link_mua} target="_blank" rel="noreferrer">
+                  Xem chi tiết / Tải về ↗
+                </a>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .page-head { padding-bottom: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .page-kicker { margin: 0 0 8px; font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--link); }
+  .page-head h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: 2rem; }
+  .page-sub, .empty-msg { color: var(--text-2); margin: 0; }
+  .book-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 720px) { .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .book-card { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; background: var(--card); overflow: hidden; }
+  .book-cover { aspect-ratio: 16/10; overflow: hidden; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .book-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .book-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .book-body h2 { margin: 0; font-family: var(--font-display); font-size: 1.25rem; }
+  .book-author, .book-meta { font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); }
+  .book-body p { margin: 0; font-size: 0.92rem; color: var(--text-2); }
+  .book-btn { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 38px; padding: 0 14px; border-radius: 8px; background: var(--accent); color: var(--accent-text); font-size: 0.84rem; font-weight: 600; text-decoration: none !important; }
+</style>

@@ -6,10 +6,13 @@ import { SITE_CONFIG } from '../cau_hinh/trang_web';
 import {
   estimateReadingTime,
   formatVietnameseDate,
+  getPostCategory,
+  getPostCategorySlug,
   getPostCover,
   getPostDate,
   getPostExcerpt,
   getPostSlug,
+  getPostTags,
   getPostTitle,
   withBase,
 } from '../utils/url';
@@ -19,10 +22,32 @@ const posts = (await getCollection('bai_viet'))
   .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
 
 const leadPost = posts[0] || null;
-const secondaryPosts = posts.slice(1);
+const secondaryPosts = SITE_CONFIG.isMultiPage ? posts.slice(1, 7) : posts.slice(1);
 const leadCover = leadPost ? getPostCover(leadPost) : undefined;
 const leadSlug = leadPost ? getPostSlug(leadPost) : '';
 const leadHref = leadPost ? withBase(`/bai-viet/${leadSlug}/`) : '#';
+
+const categoryMap = new Map<string, { name: string; slug: string; count: number; latestTitle: string }>();
+const tagSet = new Set<string>();
+for (const entry of posts) {
+  const catName = getPostCategory(entry);
+  const catSlug = getPostCategorySlug(entry);
+  const existing = categoryMap.get(catSlug);
+  if (existing) {
+    existing.count += 1;
+  } else {
+    categoryMap.set(catSlug, {
+      name: catName,
+      slug: catSlug,
+      count: 1,
+      latestTitle: getPostTitle(entry),
+    });
+  }
+  for (const tag of getPostTags(entry)) {
+    tagSet.add(tag);
+  }
+}
+const categories = Array.from(categoryMap.values());
 
 const homeJsonLd = {
   '@context': 'https://schema.org',
@@ -52,14 +77,28 @@ const homeJsonLd = {
       />
       <a class="masthead-cta" href={withBase('/bai-viet/')}>Kho bài viết ({posts.length})</a>
     </div>
+
+    {SITE_CONFIG.isMultiPage && (
+      <nav class="hub-strip" aria-label="Điều hướng đa trang">
+        <a href={withBase('/chuyen-muc/')}>Chuyên mục ({categories.length})</a>
+        <span>·</span>
+        <a href={withBase('/chu-de/')}>Chủ đề ({tagSet.size})</a>
+        <span>·</span>
+        <a href={withBase('/luu-tru/')}>Lưu trữ theo năm</a>
+        <span>·</span>
+        <a href={withBase('/gioi-thieu/')}>Giới thiệu</a>
+        <span>·</span>
+        <a href={withBase('/lien-he/')}>Liên hệ</a>
+      </nav>
+    )}
   </section>
 
   {leadPost && (
-    <section class="lead-section" data-search={`${getPostTitle(leadPost)} ${getPostExcerpt(leadPost)}`.toLowerCase()}>
+    <section class="lead-section" data-search={`${getPostTitle(leadPost)} ${getPostExcerpt(leadPost)} ${getPostCategory(leadPost)}`.toLowerCase()}>
       <a class="lead-card" href={leadHref}>
         <div class="lead-text">
           <div class="lead-meta">
-            <span class="lead-rubric">{String(leadPost.data?.danh_muc || 'Tiêu điểm')}</span>
+            <span class="lead-rubric">{getPostCategory(leadPost)}</span>
             <span>·</span>
             <span>{formatVietnameseDate(getPostDate(leadPost))}</span>
             <span>·</span>
@@ -78,9 +117,32 @@ const homeJsonLd = {
     </section>
   )}
 
+  {SITE_CONFIG.isMultiPage && categories.length > 0 && (
+    <section id="categoryHubSection" class="hub-section">
+      <div class="section-head section-head-row">
+        <h2>Khám phá theo chuyên mục</h2>
+        <a class="section-more" href={withBase('/chuyen-muc/')}>Tất cả chuyên mục →</a>
+      </div>
+      <div class="hub-grid">
+        {categories.slice(0, 4).map((cat) => (
+          <a class="hub-card" href={withBase(`/chuyen-muc/${cat.slug}/`)}>
+            <div class="hub-card-top">
+              <span class="hub-card-name">{cat.name}</span>
+              <span class="hub-card-count">{cat.count} bài</span>
+            </div>
+            <p class="hub-card-latest">{cat.latestTitle}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
   <section class="posts-section">
-    <div class="section-head">
+    <div class="section-head section-head-row">
       <h2>Bài viết gần đây</h2>
+      {SITE_CONFIG.isMultiPage && posts.length > 1 && (
+        <a class="section-more" href={withBase('/bai-viet/')}>Xem tất cả ({posts.length}) →</a>
+      )}
     </div>
 
     {posts.length === 0 ? (
@@ -99,12 +161,16 @@ const homeJsonLd = {
     const input = document.getElementById('homeSearchInput');
     const grid = document.getElementById('postsGrid');
     const leadSection = document.querySelector('.lead-section');
+    const hubSection = document.getElementById('categoryHubSection');
     const emptyMsg = document.getElementById('searchEmptyMsg');
     if (input && grid) {
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
         const cards = grid.querySelectorAll('.post-card');
         let visible = 0;
+        if (hubSection) {
+          hubSection.style.display = q ? 'none' : '';
+        }
         if (leadSection) {
           const leadText = leadSection.getAttribute('data-search') || '';
           const matchLead = !q || leadText.includes(q);
@@ -179,6 +245,29 @@ const homeJsonLd = {
     gap: 12px;
     align-items: center;
     width: 100%;
+  }
+
+  .hub-strip {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .hub-strip a {
+    color: var(--text-2);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .hub-strip a:hover {
+    color: var(--link);
   }
 
   .search-input {
@@ -312,14 +401,103 @@ const homeJsonLd = {
     display: block;
   }
 
+  .hub-section {
+    padding: 26px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hub-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  @media (min-width: 640px) {
+    .hub-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 960px) {
+    .hub-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: inherit;
+    text-decoration: none !important;
+    transition: border-color 0.16s ease, transform 0.16s ease;
+  }
+
+  .hub-card:hover {
+    border-color: var(--link);
+    transform: translateY(-1px);
+  }
+
+  .hub-card-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .hub-card-name {
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .hub-card-count {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--link);
+    white-space: nowrap;
+  }
+
+  .hub-card-latest {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--text-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   .posts-section {
     padding-top: 28px;
+  }
+
+  .section-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
   }
 
   .section-head h2 {
     font-family: var(--font-display);
     font-size: 1.4rem;
-    margin: 0 0 18px;
+    margin: 0;
+  }
+
+  .section-more {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .posts-grid {
@@ -329,14 +507,7 @@ const homeJsonLd = {
   }
 
   @media (min-width: 720px) {
-    .posts-grid.template-newyorker-light,
-    .posts-grid.template-espresso-salon {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .posts-grid.template-nytimes-light,
-    .posts-grid.template-obsidian-broadsheet,
-    .posts-grid.template-bbc-dark {
+    .posts-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -344,7 +515,11 @@ const homeJsonLd = {
   @media (min-width: 1024px) {
     .posts-grid.template-nytimes-light,
     .posts-grid.template-obsidian-broadsheet,
-    .posts-grid.template-bbc-dark {
+    .posts-grid.template-bbc-dark,
+    .posts-grid.template-monocle-magazine,
+    .posts-grid.template-guardian-portal,
+    .posts-grid.template-economist-digest,
+    .posts-grid.template-nordic-atlas {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }

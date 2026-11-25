@@ -2,6 +2,7 @@
 import {
   estimateReadingTime,
   formatVietnameseDate,
+  getPostCategory,
   getPostCover,
   getPostDate,
   getPostExcerpt,
@@ -22,7 +23,7 @@ const title = getPostTitle(entry);
 const date = getPostDate(entry);
 const excerpt = getPostExcerpt(entry);
 const cover = getPostCover(entry);
-const category = String(entry.data?.danh_muc || entry.data?.category || 'Bài viết');
+const category = getPostCategory(entry);
 const minutes = estimateReadingTime(entry.body || '');
 ---
 
@@ -62,7 +63,9 @@ const minutes = estimateReadingTime(entry.body || '');
 
   :global(body[data-template='nytimes-light']) .post-card,
   :global(body[data-template='obsidian-broadsheet']) .post-card,
-  :global(body[data-template='newyorker-light']) .post-card {
+  :global(body[data-template='newyorker-light']) .post-card,
+  :global(body[data-template='guardian-portal']) .post-card,
+  :global(body[data-template='economist-digest']) .post-card {
     border-radius: 6px;
   }
 

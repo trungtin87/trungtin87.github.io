@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_CONFIG } from '../../cau_hinh/trang_web';
+import { withBase } from '../../utils/url';
+
+const channels = (SITE_CONFIG.liveChat?.channels || []).filter(
+  (ch) => ch.enabled && ch.value && ch.value.trim().length > 0 && ch.id !== 'tawkto' && ch.id !== 'crisp'
+);
+
+function resolveChatHref(id: string, rawValue: string): string {
+  const val = rawValue.trim();
+  if (/^(https?:|mailto:|tel:)/i.test(val)) return val;
+  if (id === 'zalo') return `https://zalo.me/${encodeURIComponent(val.replace(/^@/, ''))}`;
+  if (id === 'messenger') return `https://m.me/${encodeURIComponent(val.replace(/^@/, ''))}`;
+  if (id === 'telegram') return `https://t.me/${encodeURIComponent(val.replace(/^@/, ''))}`;
+  if (id === 'whatsapp') {
+    const digits = val.replace(/[^0-9]/g, '');
+    const normalized = /^0\d{8,10}$/.test(digits) ? `84${digits.slice(1)}` : digits;
+    return `https://wa.me/${normalized}`;
+  }
+  if (id === 'email') return `mailto:${val}`;
+  return val;
+}
+
+const rssUrl = `${SITE_CONFIG.pagesUrl.replace(/\/+$/, '')}${withBase('/rss.xml')}`;
+---
+
+<BaseLayout title="Liên hệ & Theo dõi" description={`Kênh liên hệ trực tiếp và nguồn cấp RSS của ${SITE_CONFIG.siteTitle}.`}>
+  <div class="contact-wrap">
+    <header class="page-head">
+      <p class="page-kicker">Kết nối trực tiếp · Theo dõi bản tin</p>
+      <h1>Liên hệ & Theo dõi</h1>
+      <p class="page-sub">
+        Trao đổi trực tiếp với <strong>{SITE_CONFIG.authorName}</strong> hoặc đăng ký đọc bài mới qua RSS.
+      </p>
+    </header>
+
+    <div class="contact-grid">
+      <section class="contact-card">
+        <h2>Kênh trò chuyện trực tiếp</h2>
+        {channels.length > 0 ? (
+          <div class="channel-list">
+            {channels.map((ch) => (
+              <a
+                class="channel-item"
+                href={resolveChatHref(ch.id, ch.value)}
+                target={ch.id === 'email' ? undefined : '_blank'}
+                rel={ch.id === 'email' ? undefined : 'noreferrer'}
+              >
+                <span>{ch.label || ch.id.toUpperCase()}</span>
+                <span class="channel-go">Mở kênh →</span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p class="card-note">
+            Tác giả có thể bật Zalo, Messenger, Telegram, WhatsApp hoặc Email trong mục Cấu hình Live Chat để hiển thị tại đây.
+          </p>
+        )}
+      </section>
+
+      <section class="contact-card">
+        <h2>Theo dõi qua RSS</h2>
+        <p class="card-note">
+          Thêm địa chỉ RSS vào trình đọc tin ưa thích (Feedly, NetNewsWire, Reeder) để nhận bài mới không qua thuật toán.
+        </p>
+        <div class="rss-box">
+          <code>{rssUrl}</code>
+        </div>
+        <div class="rss-actions">
+          <a class="btn-rss" href={withBase('/rss.xml')}>Mở RSS Feed</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .contact-wrap {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .page-head {
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-kicker {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--link);
+  }
+  .page-head h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+  .page-sub {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 720px) {
+    .contact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .contact-card {
+    padding: 22px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .contact-card h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+  }
+  .card-note {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .channel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .channel-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none !important;
+  }
+  .channel-item:hover {
+    border-color: var(--link);
+  }
+  .channel-go {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--link);
+  }
+  .rss-box {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text);
+  }
+  .rss-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .btn-rss {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    white-space: nowrap;
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+</style>

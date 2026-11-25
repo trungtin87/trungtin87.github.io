@@ -1,0 +1,177 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  formatVietnameseDate,
+  getPostCategory,
+  getPostCategorySlug,
+  getPostDate,
+  getPostSlug,
+  getPostTitle,
+  withBase,
+} from '../../utils/url';
+
+const entries = (await getCollection('bai_viet'))
+  .filter((e) => !e.data.nhap && !e.data.draft)
+  .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+
+const map = new Map<string, { name: string; slug: string; posts: any[] }>();
+for (const entry of entries) {
+  const name = getPostCategory(entry);
+  const slug = getPostCategorySlug(entry);
+  const group = map.get(slug);
+  if (group) {
+    group.posts.push(entry);
+  } else {
+    map.set(slug, { name, slug, posts: [entry] });
+  }
+}
+const categories = Array.from(map.values()).sort((a, b) => b.posts.length - a.posts.length);
+---
+
+<BaseLayout title="Chuyên mục" description="Danh mục tất cả chuyên mục bài viết và bài tiêu biểu.">
+  <div class="page-head">
+    <p class="page-kicker">Điều hướng nhiều trang · Danh bạ chuyên mục</p>
+    <h1>Chuyên mục bài viết</h1>
+    <p class="page-sub">Toàn bộ {categories.length} chuyên mục và {entries.length} bài viết đã xuất bản.</p>
+  </div>
+
+  {categories.length === 0 ? (
+    <p style="color: var(--muted);">Chưa có chuyên mục nào.</p>
+  ) : (
+    <div class="cat-directory">
+      {categories.map((cat, idx) => (
+        <section class="cat-dir-card">
+          <div class="cat-dir-head">
+            <div>
+              <span class="cat-num">0{idx + 1}</span>
+              <h2>
+                <a href={withBase(`/chuyen-muc/${cat.slug}/`)}>{cat.name}</a>
+              </h2>
+            </div>
+            <span class="cat-count">{cat.posts.length} bài viết</span>
+          </div>
+          <ul class="cat-post-list">
+            {cat.posts.slice(0, 4).map((p) => (
+              <li>
+                <a href={withBase(`/bai-viet/${getPostSlug(p)}/`)}>{getPostTitle(p)}</a>
+                <span>{formatVietnameseDate(getPostDate(p))}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="cat-dir-foot">
+            <a href={withBase(`/chuyen-muc/${cat.slug}/`) }>Xem toàn bộ chuyên mục {cat.name} →</a>
+          </div>
+        </section>
+      ))}
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-bottom: 20px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-kicker {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--link);
+  }
+  .page-head h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+  }
+  .page-sub {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .cat-directory {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 760px) {
+    .cat-directory {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .cat-dir-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+  }
+  .cat-dir-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-num {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--link);
+    margin-bottom: 4px;
+  }
+  .cat-dir-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+  }
+  .cat-dir-head h2 a {
+    color: var(--text);
+  }
+  .cat-count {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .cat-post-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .cat-post-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 0.92rem;
+  }
+  .cat-post-list li a {
+    color: var(--text-2);
+    font-weight: 500;
+  }
+  .cat-post-list li a:hover {
+    color: var(--link);
+  }
+  .cat-post-list li span {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .cat-dir-foot {
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+</style>

@@ -6,11 +6,15 @@ import { SITE_CONFIG } from '../../cau_hinh/trang_web';
 import {
   estimateReadingTime,
   formatVietnameseDate,
+  getPostCategory,
+  getPostCategorySlug,
   getPostCover,
   getPostDate,
   getPostExcerpt,
   getPostSlug,
+  getPostTags,
   getPostTitle,
+  slugifyVi,
   withBase,
 } from '../../utils/url';
 
@@ -30,8 +34,9 @@ const title = getPostTitle(entry);
 const date = getPostDate(entry);
 const excerpt = getPostExcerpt(entry);
 const cover = getPostCover(entry);
-const category = String(entry.data?.danh_muc || entry.data?.category || 'Bài viết');
-const tags: string[] = Array.isArray(entry.data?.tags) ? entry.data.tags : [];
+const category = getPostCategory(entry);
+const categorySlug = getPostCategorySlug(entry);
+const tags = getPostTags(entry);
 const minutes = estimateReadingTime(entry.body || '');
 const resolvedAuthor = String(entry.data?.tac_gia || entry.data?.author || SITE_CONFIG.authorName);
 const pageSlug = getPostSlug(entry);
@@ -39,13 +44,17 @@ const canonicalTarget =
   entry.data?.canonical_url ||
   `${SITE_CONFIG.pagesUrl.replace(/\/+$/, '')}${withBase(`/bai-viet/${pageSlug}/`)}`;
 
+const currentIdx = allEntries.findIndex((p) => getPostSlug(p) === pageSlug);
+const prevPost = currentIdx >= 0 && currentIdx + 1 < allEntries.length ? allEntries[currentIdx + 1] : null;
+const nextPost = currentIdx > 0 ? allEntries[currentIdx - 1] : null;
+
 const relatedPosts = allEntries
   .filter((other) => getPostSlug(other) !== pageSlug)
   .sort((a, b) => {
-    const catA = String(a.data?.danh_muc || a.data?.category || '') === category ? 2 : 0;
-    const catB = String(b.data?.danh_muc || b.data?.category || '') === category ? 2 : 0;
-    const tagsA: string[] = Array.isArray(a.data?.tags) ? a.data.tags : [];
-    const tagsB: string[] = Array.isArray(b.data?.tags) ? b.data.tags : [];
+    const catA = getPostCategory(a) === category ? 2 : 0;
+    const catB = getPostCategory(b) === category ? 2 : 0;
+    const tagsA = getPostTags(a);
+    const tagsB = getPostTags(b);
     const overlapA = tagsA.filter((t) => tags.includes(t)).length;
     const overlapB = tagsB.filter((t) => tags.includes(t)).length;
     return catB + overlapB - (catA + overlapA) || getPostDate(b).localeCompare(getPostDate(a));
@@ -80,11 +89,17 @@ const blogPostingJsonLd = {
   jsonLd={blogPostingJsonLd}
 >
   <article class="article-wrap">
-    <a class="back-link" href={withBase('/bai-viet/')}>← Quay lại kho bài viết</a>
+    <nav class="breadcrumb" aria-label="Điều hướng bài viết">
+      <a href={withBase('/')}>Trang nhất</a>
+      <span>/</span>
+      <a href={withBase(`/chuyen-muc/${categorySlug}/`)}>{category}</a>
+      <span>/</span>
+      <span class="crumb-cur">{title}</span>
+    </nav>
 
     <header class="article-header">
       <div class="article-meta">
-        <span class="meta-cat">{category}</span>
+        <a class="meta-cat" href={withBase(`/chuyen-muc/${categorySlug}/`)}>{category}</a>
         <span>·</span>
         <span>{formatVietnameseDate(date)}</span>
         <span>·</span>
@@ -107,14 +122,67 @@ const blogPostingJsonLd = {
 
     {tags.length > 0 && (
       <div class="tag-row">
-        Chủ đề: {tags.map((t) => `#${t}`).join(' · ')}
+        <span class="tag-label">Chủ đề:</span>
+        {tags.map((t, idx) => (
+          <>
+            {idx > 0 && <span> · </span>}
+            <a href={withBase(`/chu-de/${slugifyVi(t)}/`)}>#{t}</a>
+          </>
+        ))}
       </div>
+    )}
+
+    {(prevPost || nextPost) && (
+      <nav class="prev-next-nav" aria-label="Bài viết trước và kế tiếp">
+        {prevPost ? (
+          <a class="pn-link pn-prev" href={withBase(`/bai-viet/${getPostSlug(prevPost)}/`)}>
+            <span class="pn-kicker">← Bài cũ hơn</span>
+            <strong class="pn-title">{getPostTitle(prevPost)}</strong>
+          </a>
+        ) : (
+          <span />
+        )}
+        {nextPost ? (
+          <a class="pn-link pn-next" href={withBase(`/bai-viet/${getPostSlug(nextPost)}/`)}>
+            <span class="pn-kicker">Bài mới hơn →</span>
+            <strong class="pn-title">{getPostTitle(nextPost)}</strong>
+          </a>
+        ) : (
+          <span />
+        )}
+      </nav>
     )}
 
     <aside class="author-box">
       <div class="author-name">{resolvedAuthor}</div>
       <p class="author-bio">{SITE_CONFIG.authorBio}</p>
     </aside>
+
+    {SITE_CONFIG.giscus?.enabled &&
+      SITE_CONFIG.giscus.repo &&
+      SITE_CONFIG.giscus.repoId &&
+      SITE_CONFIG.giscus.categoryId && (
+        <section class="comments-box" aria-label="Bình luận độc giả">
+          <h2 class="comments-heading">Thảo luận &amp; Bình luận</h2>
+          <script
+            is:inline
+            src="https://giscus.app/client.js"
+            data-repo={SITE_CONFIG.giscus.repo}
+            data-repo-id={SITE_CONFIG.giscus.repoId}
+            data-category={SITE_CONFIG.giscus.category || 'Announcements'}
+            data-category-id={SITE_CONFIG.giscus.categoryId}
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme={SITE_CONFIG.themeMode === 'dark' ? 'dark' : 'light'}
+            data-lang="vi"
+            crossorigin="anonymous"
+            async
+          />
+        </section>
+      )}
   </article>
 
   {relatedPosts.length > 0 && (
@@ -135,11 +203,28 @@ const blogPostingJsonLd = {
     margin: 0 auto;
   }
 
-  .back-link {
-    display: inline-block;
-    font-size: 0.86rem;
-    font-weight: 500;
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
     margin-bottom: 20px;
+  }
+
+  .breadcrumb a {
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+
+  .crumb-cur {
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 280px;
   }
 
   .article-header {
@@ -188,8 +273,62 @@ const blogPostingJsonLd = {
     padding-top: 16px;
     border-top: 1px solid var(--border);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag-row a {
+    color: var(--link);
+    font-weight: 500;
+  }
+
+  .prev-next-nav {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  @media (min-width: 640px) {
+    .prev-next-nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .pn-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: inherit;
+    text-decoration: none !important;
+  }
+
+  .pn-link:hover {
+    border-color: var(--link);
+  }
+
+  .pn-next {
+    text-align: right;
+  }
+
+  .pn-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--link);
+  }
+
+  .pn-title {
+    font-family: var(--font-display);
+    font-size: 0.96rem;
+    color: var(--text);
+    line-height: 1.35;
   }
 
   .article-cover {
@@ -205,7 +344,7 @@ const blogPostingJsonLd = {
   }
 
   .author-box {
-    margin-top: 36px;
+    margin-top: 32px;
     padding: 20px;
     border-radius: 12px;
     border: 1px solid var(--border);
@@ -254,5 +393,19 @@ const blogPostingJsonLd = {
     .related-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+  }
+
+  .comments-box {
+    margin-top: 32px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .comments-heading {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
   }
 </style>

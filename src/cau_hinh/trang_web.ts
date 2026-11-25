@@ -81,9 +81,9 @@ export const SITE_CONFIG: SiteIdentityConfig = {
   "footerText": "@2026 HUYỀN KHÔNG THƯ QUÁN",
   "footerLinks": [],
   "authorName": "Huyền Không",
-  "authorBio": "Tác giả blog cá nhân chia sẻ bài viết, quan điểm và ghi chép dài hạn.",
+  "authorBio": "Tác giả blog cá nhân chia sẻ ghi chép thực chiến, tiểu luận và góc nhìn dài hạn.",
   "themeMode": "light",
-  "templateStyle": "newyorker-light",
+  "templateStyle": "monocle-magazine",
   "themeColors": {
     "light": {
       "canvas": "#F7FAF8",
@@ -100,7 +100,7 @@ export const SITE_CONFIG: SiteIdentityConfig = {
       "link": "#6EE7B7"
     }
   },
-  "isMultiPage": false,
+  "isMultiPage": true,
   "pagesUrl": "https://trungtin87.github.io",
   "customDomain": "",
   "analyticsProvider": "none",

@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPostCover, getPostDate, getPostExcerpt, getPostTitle } from '../../utils/url';
+
+let entries: any[] = [];
+try {
+  entries = (await getCollection('cua_hang'))
+    .filter((e) => !e.data.nhap && !e.data.draft)
+    .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+} catch {}
+---
+
+<BaseLayout title="Cửa hàng & Tài nguyên" description="Sản phẩm số, mẫu giao diện và tài nguyên chọn lọc.">
+  <header class="page-head">
+    <p class="page-kicker">Cửa hàng số</p>
+    <h1>Sản phẩm &amp; Tài nguyên</h1>
+    <p class="page-sub">Bộ công cụ, ebook và tài liệu hữu ích.</p>
+  </header>
+
+  {entries.length === 0 ? (
+    <p class="empty-msg">Hiện chưa có sản phẩm nào.</p>
+  ) : (
+    <div class="shop-grid">
+      {entries.map((entry) => {
+        const title = getPostTitle(entry);
+        const excerpt = getPostExcerpt(entry);
+        const cover = getPostCover(entry);
+        return (
+          <article class="shop-card">
+            {cover && (
+              <div class="shop-cover"><img src={cover} alt={title} loading="lazy" /></div>
+            )}
+            <div class="shop-body">
+              <h2>{title}</h2>
+              {entry.data?.gia && (
+                <div class="shop-price">
+                  <strong>{entry.data.gia}</strong>
+                  {entry.data?.gia_goc && <s>{entry.data.gia_goc}</s>}
+                </div>
+              )}
+              {excerpt && <p>{excerpt}</p>}
+              {entry.data?.link_mua && (
+                <a class="shop-btn" href={entry.data.link_mua} target="_blank" rel="noreferrer">
+                  Đặt mua / Nhận tài nguyên ↗
+                </a>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .page-head { padding-bottom: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .page-kicker { margin: 0 0 8px; font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--link); }
+  .page-head h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: 2rem; }
+  .page-sub, .empty-msg { color: var(--text-2); margin: 0; }
+  .shop-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 720px) { .shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .shop-card { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; background: var(--card); overflow: hidden; }
+  .shop-cover { aspect-ratio: 16/10; overflow: hidden; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .shop-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .shop-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .shop-body h2 { margin: 0; font-family: var(--font-display); font-size: 1.2rem; }
+  .shop-price { display: flex; align-items: baseline; gap: 8px; font-family: var(--font-mono); color: var(--link); font-size: 0.96rem; }
+  .shop-price s { color: var(--muted); font-size: 0.8rem; }
+  .shop-body p { margin: 0; font-size: 0.9rem; color: var(--text-2); }
+  .shop-btn { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 38px; padding: 0 14px; border-radius: 8px; background: var(--accent); color: var(--accent-text); font-size: 0.84rem; font-weight: 600; text-decoration: none !important; }
+</style>

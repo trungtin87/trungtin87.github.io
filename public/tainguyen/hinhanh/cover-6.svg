@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#F7FAF8"/>
+  
+        <rect x="0" y="0" width="1200" height="14" fill="#14532D"/>
+        <rect x="56" y="64" width="1088" height="502" fill="none" stroke="#D7DCD9" stroke-width="1.5"/>
+        <rect x="780" y="128" width="300" height="310" rx="8" fill="#EAF2ED" stroke="#D7DCD9" stroke-width="1.5"/>
+        <circle cx="930" cy="240" r="68" fill="none" stroke="#14532D" stroke-width="2.5"/>
+        <circle cx="930" cy="240" r="18" fill="#14532D"/>
+        <line x1="820" y1="365" x2="1040" y2="365" stroke="#D7DCD9" stroke-width="2"/>
+  <text x="90" y="155" font-family="monospace" font-size="20" font-weight="700" letter-spacing="2" fill="#15803D">VĂN HOÁ &amp; DU KÝ</text>
+  <text x="90" y="232" font-family="Georgia, serif" font-weight="700" font-size="38" fill="#122119"><tspan x="90" dy="0">Lưu giữ ký ức qua những</tspan><tspan x="90" dy="48">khung hình vuông vắn và…</tspan></text>
+  <text x="90" y="346" font-family="sans-serif" font-size="22" fill="#44514A">Bùi Gia Trang · Monocle Đa trang</text>
+  <line x1="90" y1="470" x2="1110" y2="470" stroke="#D7DCD9" stroke-width="1.5"/>
+  <text x="90" y="520" font-family="monospace" font-size="20" fill="#79837D">Huyền Không · Số 06/06</text>
+</svg>

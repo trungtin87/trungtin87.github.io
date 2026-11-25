@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_CONFIG } from '../../cau_hinh/trang_web';
+import { getPostCategory, getPostCategorySlug, getPostDate, withBase } from '../../utils/url';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('bai_viet'))
+    .filter((e) => !e.data.nhap && !e.data.draft)
+    .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+
+  const grouped = new Map<string, { name: string; slug: string; posts: any[] }>();
+  for (const entry of entries) {
+    const name = getPostCategory(entry);
+    const slug = getPostCategorySlug(entry);
+    const cur = grouped.get(slug);
+    if (cur) {
+      cur.posts.push(entry);
+    } else {
+      grouped.set(slug, { name, slug, posts: [entry] });
+    }
+  }
+  const allCats = Array.from(grouped.values()).map((c) => ({
+    name: c.name,
+    slug: c.slug,
+    count: c.posts.length,
+  }));
+
+  return Array.from(grouped.values()).map((group) => ({
+    params: { slug: group.slug },
+    props: {
+      categoryName: group.name,
+      categorySlug: group.slug,
+      posts: group.posts,
+      allCats,
+    },
+  }));
+}
+
+const { categoryName, categorySlug, posts = [], allCats = [] } = Astro.props;
+---
+
+<BaseLayout
+  title={`Chuyên mục: ${categoryName}`}
+  description={`Danh sách bài viết thuộc chuyên mục ${categoryName}.`}
+>
+  <nav class="breadcrumb">
+    <a href={withBase('/')}>Trang nhất</a>
+    <span>/</span>
+    <a href={withBase('/chuyen-muc/')}>Chuyên mục</a>
+    <span>/</span>
+    <span>{categoryName}</span>
+  </nav>
+
+  <header class="page-head">
+    <h1>{categoryName}</h1>
+    <p>{posts.length} bài viết trong chuyên mục này.</p>
+    {allCats.length > 1 && (
+      <div class="cat-switch">
+        {allCats.map((c: any) => (
+          <a
+            href={withBase(`/chuyen-muc/${c.slug}/`) }
+            class={c.slug === categorySlug ? 'switch-link active' : 'switch-link'}
+          >
+            {c.name} ({c.count})
+          </a>
+        ))}
+      </div>
+    )}
+  </header>
+
+  <div class={`col-grid template-${SITE_CONFIG.templateStyle}`}>
+    {posts.map((entry: any) => (
+      <PostCard entry={entry} />
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .breadcrumb a {
+    color: var(--text-2);
+  }
+  .page-head {
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-head h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+  .page-head p {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .cat-switch {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .switch-link {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none !important;
+    white-space: nowrap;
+  }
+  .switch-link.active {
+    background: var(--accent);
+    color: var(--accent-text);
+    border-color: var(--accent);
+  }
+  .col-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 720px) {
+    .col-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .col-grid.template-nytimes-light,
+    .col-grid.template-obsidian-broadsheet,
+    .col-grid.template-bbc-dark,
+    .col-grid.template-monocle-magazine,
+    .col-grid.template-guardian-portal,
+    .col-grid.template-economist-digest,
+    .col-grid.template-nordic-atlas {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

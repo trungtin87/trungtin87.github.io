@@ -1,16 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
-  <rect width="1200" height="630" fill="#161210"/>
+  <rect width="1200" height="630" fill="#F7FAF8"/>
   
-        <radialGradient id="lamp-2" cx="78%" cy="32%" r="48%">
-          <stop offset="0%" stop-color="#FBBF24" stop-opacity="0.28"/>
-          <stop offset="100%" stop-color="#161210" stop-opacity="0"/>
-        </radialGradient>
-        <rect width="1200" height="630" fill="url(#lamp-2)"/>
-        <circle cx="940" cy="220" r="95" fill="none" stroke="#FBBF24" stroke-width="1.5" opacity="0.5"/>
-        <path d="M845 310 C890 250, 990 250, 1035 310" fill="none" stroke="#E5A93C" stroke-width="2.5"/>
-  <text x="90" y="155" font-family="monospace" font-size="20" font-weight="700" letter-spacing="2" fill="#FBBF24">SỔ TAY ĐỌC SÁCH</text>
-  <text x="90" y="232" font-family="Georgia, serif" font-weight="700" font-size="38" fill="#F5EFE6"><tspan x="90" dy="0">Sổ tay đọc sách: Rút gọn</tspan><tspan x="90" dy="48">đoạn mở đầu để giữ mạch…</tspan></text>
-  <text x="90" y="346" font-family="sans-serif" font-size="22" fill="#D6CBC0">Đạo ký của một phàm nhân · Salon Suy tư</text>
-  <line x1="90" y1="470" x2="1110" y2="470" stroke="#3B312B" stroke-width="1.5"/>
-  <text x="90" y="520" font-family="monospace" font-size="20" fill="#A39589">BÙI TRUNG TÍN · Số 02/03</text>
+        <rect x="0" y="0" width="1200" height="14" fill="#14532D"/>
+        <rect x="56" y="64" width="1088" height="502" fill="none" stroke="#D7DCD9" stroke-width="1.5"/>
+        <rect x="780" y="128" width="300" height="310" rx="8" fill="#EAF2ED" stroke="#D7DCD9" stroke-width="1.5"/>
+        <circle cx="930" cy="240" r="68" fill="none" stroke="#14532D" stroke-width="2.5"/>
+        <circle cx="930" cy="240" r="18" fill="#14532D"/>
+        <line x1="820" y1="365" x2="1040" y2="365" stroke="#D7DCD9" stroke-width="2"/>
+  <text x="90" y="155" font-family="monospace" font-size="20" font-weight="700" letter-spacing="2" fill="#15803D">ĐÔ THỊ &amp; THIẾT KẾ</text>
+  <text x="90" y="232" font-family="Georgia, serif" font-weight="700" font-size="38" fill="#122119"><tspan x="90" dy="0">Ghi chép đô thị: Nhịp sống</tspan><tspan x="90" dy="48">xanh và không gian công…</tspan></text>
+  <text x="90" y="346" font-family="sans-serif" font-size="22" fill="#44514A">Bùi Gia Trang · Monocle Đa trang</text>
+  <line x1="90" y1="470" x2="1110" y2="470" stroke="#D7DCD9" stroke-width="1.5"/>
+  <text x="90" y="520" font-family="monospace" font-size="20" fill="#79837D">Huyền Không · Số 02/06</text>
 </svg>

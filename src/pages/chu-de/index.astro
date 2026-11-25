@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPostTags, slugifyVi, withBase } from '../../utils/url';
+
+const entries = (await getCollection('bai_viet')).filter((e) => !e.data.nhap && !e.data.draft);
+
+const tagMap = new Map<string, { label: string; slug: string; count: number }>();
+for (const entry of entries) {
+  for (const tag of getPostTags(entry)) {
+    const slug = slugifyVi(tag);
+    const existing = tagMap.get(slug);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      tagMap.set(slug, { label: tag, slug, count: 1 });
+    }
+  }
+}
+const tags = Array.from(tagMap.values()).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+---
+
+<BaseLayout title="Chủ đề & Từ khóa" description="Danh sách tất cả từ khóa và chủ đề bài viết.">
+  <header class="page-head">
+    <p class="page-kicker">Điều hướng nhiều trang · Chỉ mục từ khóa</p>
+    <h1>Chủ đề nổi bật</h1>
+    <p class="page-sub">Chọn một chủ đề để xem nhanh các bài viết cùng mạch nội dung.</p>
+  </header>
+
+  {tags.length === 0 ? (
+    <p style="color: var(--muted);">Chưa có thẻ chủ đề nào được gắn cho bài viết.</p>
+  ) : (
+    <div class="tags-grid">
+      {tags.map((tag) => (
+        <a class="tag-card" href={withBase(`/chu-de/${tag.slug}/`) }>
+          <span class="tag-name">#{tag.label}</span>
+          <span class="tag-count">{tag.count} bài</span>
+        </a>
+      ))}
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-kicker {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--link);
+  }
+  .page-head h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+  .page-sub {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+  }
+  .tag-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    text-decoration: none !important;
+    transition: border-color 0.16s ease, transform 0.16s ease;
+  }
+  .tag-card:hover {
+    border-color: var(--link);
+    transform: translateY(-1px);
+  }
+  .tag-name {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--link);
+  }
+  .tag-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_CONFIG } from '../../cau_hinh/trang_web';
+import { getPostDate, getPostTags, slugifyVi, withBase } from '../../utils/url';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('bai_viet'))
+    .filter((e) => !e.data.nhap && !e.data.draft)
+    .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+
+  const grouped = new Map<string, { label: string; slug: string; posts: any[] }>();
+  for (const entry of entries) {
+    for (const tag of getPostTags(entry)) {
+      const slug = slugifyVi(tag);
+      const existing = grouped.get(slug);
+      if (existing) {
+        if (!existing.posts.includes(entry)) existing.posts.push(entry);
+      } else {
+        grouped.set(slug, { label: tag, slug, posts: [entry] });
+      }
+    }
+  }
+
+  return Array.from(grouped.values()).map((g) => ({
+    params: { tag: g.slug },
+    props: { tagLabel: g.label, posts: g.posts },
+  }));
+}
+
+const { tagLabel, posts = [] } = Astro.props;
+---
+
+<BaseLayout title={`Chủ đề: #${tagLabel}`} description={`Các bài viết gắn thẻ #${tagLabel}.`} >
+  <nav class="breadcrumb">
+    <a href={withBase('/')}>Trang nhất</a>
+    <span>/</span>
+    <a href={withBase('/chu-de/')}>Chủ đề</a>
+    <span>/</span>
+    <span>#{tagLabel}</span>
+  </nav>
+
+  <header class="page-head">
+    <h1>#{tagLabel}</h1>
+    <p>{posts.length} bài viết mang từ khóa này.</p>
+  </header>
+
+  <div class={`col-grid template-${SITE_CONFIG.templateStyle}`}>
+    {posts.map((entry: any) => (
+      <PostCard entry={entry} />
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .breadcrumb a {
+    color: var(--text-2);
+  }
+  .page-head {
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-head h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+  .page-head p {
+    margin: 0;
+    color: var(--text-2);
+  }
+  .col-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 720px) {
+    .col-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .col-grid.template-nytimes-light,
+    .col-grid.template-obsidian-broadsheet,
+    .col-grid.template-bbc-dark,
+    .col-grid.template-monocle-magazine,
+    .col-grid.template-guardian-portal,
+    .col-grid.template-economist-digest,
+    .col-grid.template-nordic-atlas {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,201 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  estimateReadingTime,
+  formatVietnameseDate,
+  getPostCategory,
+  getPostCategorySlug,
+  getPostDate,
+  getPostSlug,
+  getPostTags,
+  getPostTitle,
+  withBase,
+} from '../../utils/url';
+
+const entries = (await getCollection('bai_viet'))
+  .filter((e) => !e.data.nhap && !e.data.draft)
+  .sort((a, b) => getPostDate(b).localeCompare(getPostDate(a)));
+
+const byYear = new Map<string, Map<string, any[]>>();
+const catSet = new Set<string>();
+const tagSet = new Set<string>();
+
+for (const entry of entries) {
+  const d = getPostDate(entry);
+  const year = d.slice(0, 4) || 'Khác';
+  const monthNum = d.slice(5, 7) || '01';
+  const monthLabel = `Tháng ${Number(monthNum)}/${year}`;
+  catSet.add(getPostCategory(entry));
+  for (const t of getPostTags(entry)) tagSet.add(t);
+  if (!byYear.has(year)) byYear.set(year, new Map());
+  const yMap = byYear.get(year)!;
+  if (!yMap.has(monthLabel)) yMap.set(monthLabel, []);
+  yMap.get(monthLabel)!.push(entry);
+}
+
+const years = Array.from(byYear.entries()).map(([year, monthsMap]) => ({
+  year,
+  months: Array.from(monthsMap.entries()).map(([label, items]) => ({ label, items })),
+}));
+---
+
+<BaseLayout title="Lưu trữ theo dòng thời gian" description="Mục lục lưu trữ toàn bộ bài viết sắp xếp theo năm và tháng.">
+  <header class="page-head">
+    <p class="page-kicker">Điều hướng nhiều trang · Biên niên sử bài viết</p>
+    <h1>Lưu trữ theo thời gian</h1>
+    <div class="archive-stats">
+      <span><strong>{entries.length}</strong> bài viết</span>
+      <span>·</span>
+      <span><strong>{catSet.size}</strong> chuyên mục</span>
+      <span>·</span>
+      <span><strong>{tagSet.size}</strong> chủ đề</span>
+    </div>
+  </header>
+
+  {years.length === 0 ? (
+    <p style="color: var(--muted);">Chưa có bài viết nào trong kho lưu trữ.</p>
+  ) : (
+    <div class="timeline">
+      {years.map((y) => (
+        <section class="year-block" id={`nam-${y.year}`}>
+          <h2 class="year-heading">{y.year}</h2>
+          <div class="months-wrap">
+            {y.months.map((m) => (
+              <div class="month-block">
+                <h3 class="month-heading">{m.label}</h3>
+                <ul class="timeline-list">
+                  {m.items.map((post) => (
+                    <li class="timeline-item">
+                      <time class="tl-date">{formatVietnameseDate(getPostDate(post))}</time>
+                      <div class="tl-main">
+                        <a class="tl-title" href={withBase(`/bai-viet/${getPostSlug(post)}/`)}>
+                          {getPostTitle(post)}
+                        </a>
+                        <div class="tl-meta">
+                          <a href={withBase(`/chuyen-muc/${getPostCategorySlug(post)}/`)}>
+                            {getPostCategory(post)}
+                          </a>
+                          <span>·</span>
+                          <span>{estimateReadingTime(post.body || '')} phút đọc</span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  )}
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-kicker {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--link);
+  }
+  .page-head h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+  .archive-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-2);
+  }
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .year-heading {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  .months-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .month-heading {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--link);
+  }
+  .timeline-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .timeline-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .timeline-item:last-child {
+    border-bottom: 0;
+  }
+  @media (min-width: 640px) {
+    .timeline-item {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 20px;
+    }
+  }
+  .tl-date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    white-space: nowrap;
+    min-width: 92px;
+  }
+  .tl-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .tl-title {
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .tl-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+</style>
